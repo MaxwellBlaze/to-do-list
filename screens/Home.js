@@ -1,5 +1,6 @@
 import React, {useState, useEffect, } from 'react';
 import {StyleSheet, View, Text, Image, Button, FlatList, TouchableOpacity, TextInput, Keyboard, Modal, Alert} from 'react-native';
+import {Swipeable} from 'react-native-gesture-handler';
 import { firebase } from '../firebase/config';
 import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
@@ -16,21 +17,6 @@ const Home = ({navigation}) => {
 
     //get data from firebase
     useEffect(() => {
-        // listsRef
-        // .orderBy('dateCreated', 'desc')
-        // .onSnapshot(
-        //     querySnapshot => {
-        //         const lists = []
-        //         querySnapshot.firebase.forEach((doc) => {
-        //             const {heading} = doc.data()
-        //             lists.push({
-        //                 id: doc.id,
-        //                 heading,
-        //             })
-        //         })
-        //         setLists(lists);
-        //     }
-        // )
         listsRef.orderBy('dateCreated', 'desc').onSnapshot({
             error: (e) => console.log(e),
             next: (querySnapshot) => {
@@ -47,14 +33,15 @@ const Home = ({navigation}) => {
         })
 
     }, []);
-
+    
     //delete a list
     const deleteList = (lists) => {
+        // console.log(lists);
         listsRef
         .doc(lists.id)
         .delete()
         .then(() => {
-            alert('List deleted');
+            // alert('List deleted');
         })
         .catch(error => {
             alert(error);
@@ -78,9 +65,32 @@ const Home = ({navigation}) => {
             .catch((error) => {
                 alert(error);
             })
+        }else{
+            alert('List name cannot be empty!');
         };
         setModalVisible(!modalVisible);
-    }
+    };
+
+    const rightSwipeActions = (item) => {
+        // console.log(item);
+        return (
+            <View
+            style={{
+                backgroundColor: '#E5DCC5',
+                justifyContent: 'center',
+                alignItems: 'flex-end',
+                padding: 10,
+            }}
+            >
+                <FontAwesome 
+                    name='trash-o'
+                    color='red'
+                    size='30x'
+                    onPress={ () => deleteList(item) }
+                />
+            </View>
+        );
+    };
 
     return(
         <View style={styles.container}>
@@ -98,27 +108,23 @@ const Home = ({navigation}) => {
                     data={lists}
                     numColumns={1}
                     renderItem={({item}) => (
-                        <View>
-                            <TouchableOpacity style={styles.list}>
-                                <Text style={{textAlign: 'center', paddingTop: 5, fontSize: 18,}}>{item.heading.toUpperCase()}</Text>
-                            </TouchableOpacity>
-                        </View>
+                        
+                        <Swipeable
+                            renderRightActions={() => rightSwipeActions(item)}
+                        >
+                            <View>
+                                <TouchableOpacity style={styles.list}>
+                                    <Text style={{textAlign: 'center', paddingTop: 5, fontSize: 18,}}>{item.heading}</Text>
+                                </TouchableOpacity>
+
+                            </View>
+                        </Swipeable> 
                     )}
                 />
 
             </View>
-            
-            {/* <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.button}>
-                    <Text style={styles.buttonText}>
-                        All Tasks
-                    </Text>
-                </TouchableOpacity>
-                     
-            </View> */}
 
             <View style={styles.buttonsContainer}>
-                {/* To do: onPress function--> bring user to list creation page */}
                 <TouchableOpacity 
                     style={[styles.button, {borderTopLeftRadius: 15, borderBottomLeftRadius: 15,}]}
                     onPress={() => setModalVisible(true)}
@@ -162,7 +168,7 @@ const Home = ({navigation}) => {
                             <TextInput 
                                 style={styles.textInput}
                                 placeholder='List Name'
-                                placeholderTextColor={'black'}
+                                placeholderTextColor={'grey'}
                                 onChangeText={(heading) => setAddList(heading)}
                                 value={addList}
                             />
@@ -261,6 +267,7 @@ const styles = StyleSheet.create({
         // flexDirection: 'column',
         // height: 400,
         // width: 250,
+        borderWidth: 0.3,
         margin: 20,
         backgroundColor: "white",
         borderRadius: 20,
