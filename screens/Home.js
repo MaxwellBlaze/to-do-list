@@ -1,23 +1,43 @@
-import React, {useState, useEffect, } from 'react';
-import {StyleSheet, View, Text, Image, Button, FlatList, TouchableOpacity, TextInput, Keyboard, Modal, Alert} from 'react-native';
-import {Swipeable} from 'react-native-gesture-handler';
+import React, { useState, useEffect, } from 'react';
+import { StyleSheet, View, Text, Image, Button, FlatList, TouchableOpacity, TextInput, Keyboard, Modal, Alert } from 'react-native';
+import { Swipeable } from 'react-native-gesture-handler';
+import  SwitchSelector  from "react-native-switch-selector";
+import DatePicker from 'react-native-date-picker';
 import { firebase } from '../firebase/config';
 import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
 
 const Home = ({navigation}) => {
 
-    //for managing lists, do the same for tasks in ListView screen
+    //for managing lists
     const [lists, setLists] = useState([]);
     const listsRef = firebase.firestore().collection('lists');
-    const [addList, setAddList] = useState('');
+    const [addList, setAddList] = useState([]);
 
-    //for + List modal
-    const [modalVisible, setModalVisible] = useState(false);
+    // for managing tasks
+    const [tasks, setTasks] = useState([]);
+    const tasksRef = firebase.firestore().collection('tasks');
+    //add states for all properties
+    const [addTaskName, setAddTaskName] = useState('');
+    const [addPriority, setAddPriority] = useState('');
+    const [addTimeAndDate, setAddTimeAndDate] = useState(new Date());
+    const [addTimeToComplete, setAddTimeToComplete] = useState('');
+    // const [addIsCompleted, setAddIsCompleted] = useState('');
+    const [addBelongsTo, setAddBelongsTo] = useState('');
+
+    //for +List modal
+    const [addListModalVisible, setAddListModalVisible] = useState(false);
+
+    //for +Task modal
+    const [addTaskModalVisible, setAddTaskModalVisible] = useState(false);
+
+    //for date picker modal
+    const [open, setOpen] = useState(false)
 
     //get data from firebase
     useEffect(() => {
-        listsRef.orderBy('dateCreated', 'desc').onSnapshot({
+        //for lists
+        listsRef.orderBy('dateCreated', 'asc').onSnapshot({
             error: (e) => console.log(e),
             next: (querySnapshot) => {
                 const lists = [];
@@ -30,7 +50,23 @@ const Home = ({navigation}) => {
                 })
                 setLists(lists);
             }
-        })
+        });
+
+        //for tasks
+        tasksRef.orderBy('dateCreated', 'asc').onSnapshot({
+            error: (e) => console.log(e),
+            next: (querySnapshot) => {
+                const tasks = [];
+                querySnapshot.forEach((doc) => {
+                    const {heading} = doc.data()
+                    tasks.push({
+                        id: doc.id,
+                        heading,
+                    })
+                })
+                setTasks(tasks);
+            }
+        });
 
     }, []);
     
@@ -68,7 +104,54 @@ const Home = ({navigation}) => {
         }else{
             alert('List name cannot be empty!');
         };
-        setModalVisible(!modalVisible);
+        setAddListModalVisible(!addListModalVisible);
+    };
+
+    //delete a task
+    const deleteTask = (tasks) => {
+        // console.log(lists);
+        tasksRef
+        .doc(tasks.id)
+        .delete()
+        .then(() => {
+            // alert('List deleted');
+        })
+        .catch(error => {
+            alert(error);
+        })
+    };
+
+    //add a task
+    const addNewTask = () => {
+        if(addTaskName && addTaskName.length > 0){
+            const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+            // need to edit this part
+            const data = {
+                heading: addTaskName,
+                priority: addPriority,
+                timeAndDate: addTimeAndDate,
+                timeToComplete: addTimeToComplete,
+                isCompleted: false,
+                belongsTo: addBelongsTo,
+                dateCreated: timestamp,
+            };
+            tasksRef
+            .add(data)
+            .then(() => {
+                setAddTaskName('');
+                setAddPriority('');
+                setAddTimeAndDate('');
+                setAddTimeToComplete('');
+                setAddBelongsTo('');
+                Keyboard.dismiss();
+            })
+            .catch((error) => {
+                alert(error);
+            })
+        }else{
+            alert('Fields cannot be empty!');
+        };
+        setAddTaskModalVisible(!addTaskModalVisible);
     };
 
     const rightSwipeActions = (item) => {
@@ -127,7 +210,7 @@ const Home = ({navigation}) => {
             <View style={styles.buttonsContainer}>
                 <TouchableOpacity 
                     style={[styles.button, {borderTopLeftRadius: 15, borderBottomLeftRadius: 15,}]}
-                    onPress={() => setModalVisible(true)}
+                    onPress={() => setAddListModalVisible(true)}
                 >
                     <Text style={styles.buttonText}>
                         + List
@@ -142,7 +225,10 @@ const Home = ({navigation}) => {
                 </TouchableOpacity>
 
                 {/* To do: onPress function--> bring user to task creation page */}
-                <TouchableOpacity style={[styles.button, {borderTopRightRadius: 15, borderBottomRightRadius: 15,}]}>
+                <TouchableOpacity 
+                    style={[styles.button, {borderTopRightRadius: 15, borderBottomRightRadius: 15,}]}
+                    onPress={() => setAddTaskModalVisible(true)}
+                    >
                     <Text style={styles.buttonText}>
                         + Task
                     </Text>
@@ -154,10 +240,10 @@ const Home = ({navigation}) => {
                 <Modal
                     animationType="slide"
                     transparent={true}
-                    visible={modalVisible}
+                    visible={addListModalVisible}
                     onRequestClose={() => {
                     Alert.alert("Modal has been closed.");
-                    setModalVisible(!modalVisible);
+                    setAddListModalVisible(!addListModalVisible);
                     }}
                 >
 
@@ -173,13 +259,103 @@ const Home = ({navigation}) => {
                                 value={addList}
                             />
 
-                            <TouchableOpacity onPress={() => setModalVisible(!modalVisible)}>
+                            <TouchableOpacity onPress={() => setAddListModalVisible(!addListModalVisible)}>
                                 <View style={[styles.button, {marginTop: 30, backgroundColor: 'maroon', }]}>
                                     <Text style={[styles.buttonText, {fontSize: 16,}]}>Cancel</Text>
                                 </View>
                             </TouchableOpacity>
 
                             <TouchableOpacity onPress={() => addNewList()}>
+                                <View style={[styles.button, {marginTop: 30,}]}>
+                                    <Text style={[styles.buttonText, {fontSize: 16,}]}>Create</Text>
+                                </View>
+                            </TouchableOpacity> 
+                            
+                        </View>
+                    </View>
+                </Modal>
+            </View>
+
+            {/* add task modal */}
+            <View style={styles.centeredView}>
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={addTaskModalVisible}
+                    onRequestClose={() => {
+                    Alert.alert("Modal has been closed.");
+                    setAddTaskModalVisible(!addTaskModalVisible);
+                    }}
+                >
+
+                    <View style={styles.centeredView}>
+                        <View style={styles.modalView}>
+
+                            <Text style={styles.headerText}>Add A Task</Text>
+
+                            <TextInput 
+                                style={styles.textInput}
+                                placeholder='Task Name'
+                                placeholderTextColor={'grey'}
+                                onChangeText={(heading) => setAddTaskName(heading)}
+                                value={addTaskName}
+                            />
+                            
+                            <SwitchSelector 
+                                initial={0}
+                                // change console.log to setAddPriority
+                                onPress={(value) => setAddPriority(value)}
+                                selectedColor='black'
+                                borderColor='black'
+                                style={{borderWidth:0.3, borderRadius: 50, marginTop: 20,}}
+                                backgroundColor='#E5DCC5'
+                                options={[
+                                    { label: "Low", value: "low", activeColor: 'green' }, 
+                                    { label: "Medium", value: "med", activeColor: 'yellow' }, 
+                                    { label: "High", value: "high", activeColor: 'red' }, 
+                                ]}
+                            />
+
+                            <Text style={{paddingTop: 15,}}>*timeAndDate* Picker Here</Text>
+                            
+                            
+                            <View>  
+                                {/* <DatePicker 
+                                    modal
+                                    open={open}
+                                    date={addTimeAndDate}
+                                    onConfirm={(date) => {
+                                        setOpen(false)
+                                        setAddTimeAndDate(date)
+                                    }}
+                                    onCancel={() => {
+                                        setOpen(false)
+                                    }}
+                                /> */}
+
+                                {/* <DatePicker date={addTimeAndDate} onDateChange={setAddTimeAndDate} /> */}
+
+                                <TouchableOpacity 
+                                    style={{marginTop: 20, borderWidth: 1, padding: 10, borderRadius: 15,}}
+                                    onPress={() => setOpen(true)}    
+                                >
+                                    <Text>Set Deadline</Text>
+                                 </TouchableOpacity>
+                            </View>
+                            
+
+                            <Text style={{paddingTop: 15,}}>*timeToComplete* Picker Here</Text>
+
+                            <Text style={{paddingTop: 15,}}>*belongsTo* List Picker Here</Text>
+
+
+                            <TouchableOpacity onPress={() => setAddTaskModalVisible(!addTaskModalVisible)}>
+                                <View style={[styles.button, {marginTop: 30, backgroundColor: 'maroon', }]}>
+                                    <Text style={[styles.buttonText, {fontSize: 16,}]}>Cancel</Text>
+                                </View>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity onPress={() => addNewTask()}>
                                 <View style={[styles.button, {marginTop: 30,}]}>
                                     <Text style={[styles.buttonText, {fontSize: 16,}]}>Create</Text>
                                 </View>
