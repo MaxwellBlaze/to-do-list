@@ -2,7 +2,8 @@ import React, { useState, useEffect, } from 'react';
 import { StyleSheet, View, Text, Image, Button, FlatList, TouchableOpacity, TextInput, Keyboard, Modal, Alert } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 import  SwitchSelector  from "react-native-switch-selector";
-import DatePicker from 'react-native-date-picker';
+// import DatePicker from 'react-native-date-picker';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { firebase } from '../firebase/config';
 import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
@@ -21,7 +22,7 @@ const Home = ({navigation}) => {
     const [addTaskName, setAddTaskName] = useState('');
     const [addPriority, setAddPriority] = useState('');
     const [addTimeAndDate, setAddTimeAndDate] = useState(new Date());
-    const [addTimeToComplete, setAddTimeToComplete] = useState('');
+    const [addTimeToComplete, setAddTimeToComplete] = useState(new Date());
     // const [addIsCompleted, setAddIsCompleted] = useState('');
     const [addBelongsTo, setAddBelongsTo] = useState('');
 
@@ -300,6 +301,8 @@ const Home = ({navigation}) => {
                                 onChangeText={(heading) => setAddTaskName(heading)}
                                 value={addTaskName}
                             />
+
+                            <Text style={{paddingTop: 15, fontSize: 16,}}>Set priority:</Text>
                             
                             <SwitchSelector 
                                 initial={0}
@@ -307,7 +310,7 @@ const Home = ({navigation}) => {
                                 onPress={(value) => setAddPriority(value)}
                                 selectedColor='black'
                                 borderColor='black'
-                                style={{borderWidth:0.3, borderRadius: 50, marginTop: 20,}}
+                                style={{borderWidth:0.3, borderRadius: 50, marginTop: 10,}}
                                 backgroundColor='#E5DCC5'
                                 options={[
                                     { label: "Low", value: "low", activeColor: 'green' }, 
@@ -316,27 +319,28 @@ const Home = ({navigation}) => {
                                 ]}
                             />
 
-                            <Text style={{paddingTop: 15,}}>*timeAndDate* Picker Here</Text>
+                            <Text style={{paddingTop: 15, fontSize: 16,}}>Set a deadline:</Text>
                             
                             
                             <View>  
-                                {/* <DatePicker 
-                                    modal
-                                    open={open}
+                                <DateTimePickerModal 
+                                    mode='datetime'
+                                    display='default'
+                                    isVisible={open}
                                     date={addTimeAndDate}
-                                    onConfirm={(date) => {
-                                        setOpen(false)
-                                        setAddTimeAndDate(date)
-                                    }}
-                                    onCancel={() => {
-                                        setOpen(false)
-                                    }}
-                                /> */}
-
-                                {/* <DatePicker date={addTimeAndDate} onDateChange={setAddTimeAndDate} /> */}
+                                    // onConfirm={(date) => {
+                                    //     setOpen(false)
+                                    //     setAddTimeAndDate(date)
+                                    // }}
+                                    onConfirm={()=>{console.log('on confirm')}}
+                                    // onCancel={() => {
+                                    //     setOpen(false)
+                                    // }}
+                                    onCancel={()=>{setOpen(false); console.log('on cancel')}}
+                                />
 
                                 <TouchableOpacity 
-                                    style={{marginTop: 20, borderWidth: 1, padding: 10, borderRadius: 15,}}
+                                    style={{marginTop: 10, borderWidth: 0.3, padding: 10, borderRadius: 15, backgroundColor: '#E5DCC5'}}
                                     onPress={() => setOpen(true)}    
                                 >
                                     <Text>Set Deadline</Text>
@@ -344,9 +348,34 @@ const Home = ({navigation}) => {
                             </View>
                             
 
-                            <Text style={{paddingTop: 15,}}>*timeToComplete* Picker Here</Text>
+                            <Text style={{paddingTop: 15, fontSize: 16,}}>Set estimated time to complete task:</Text>
 
-                            <Text style={{paddingTop: 15,}}>*belongsTo* List Picker Here</Text>
+                            <View>  
+                                <DateTimePickerModal 
+                                    mode='time'
+                                    display='default'
+                                    isVisible={open}
+                                    date={addTimeToComplete}
+                                    // onConfirm={(date) => {
+                                    //     setOpen(false)
+                                    //     setAddTimeAndDate(date)
+                                    // }}
+                                    onConfirm={()=>{console.log('on confirm')}}
+                                    // onCancel={() => {
+                                    //     setOpen(false)
+                                    // }}
+                                    onCancel={()=>{setOpen(false); console.log('on cancel')}}
+                                />
+
+                                <TouchableOpacity 
+                                    style={{marginTop: 10, borderWidth: 0.3, padding: 10, borderRadius: 15, backgroundColor: '#E5DCC5'}}
+                                    onPress={() => setOpen(true)}    
+                                >
+                                    <Text>Est. Time to Complete</Text>
+                                 </TouchableOpacity>
+                            </View>
+
+                            <Text style={{paddingTop: 15, fontSize: 16,}}>*belongsTo* List Picker Here</Text>
 
 
                             <TouchableOpacity onPress={() => setAddTaskModalVisible(!addTaskModalVisible)}>
@@ -435,7 +464,7 @@ const styles = StyleSheet.create({
         
         justifyContent: "center",
         alignItems: "center",
-        marginTop: '50%',
+        marginTop: '30%',
         
         
       },
