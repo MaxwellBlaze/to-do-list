@@ -526,7 +526,7 @@ const styles = StyleSheet.create({
         
         justifyContent: "center",
         alignItems: "center",
-        marginTop: '30%',
+        marginTop: '50%',
         
         
       },
