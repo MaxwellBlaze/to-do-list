@@ -1,8 +1,8 @@
 import React, { useState, useEffect, } from 'react';
-import { StyleSheet, View, Text, Image, Button, FlatList, TouchableOpacity, TextInput, Keyboard, Modal, Alert } from 'react-native';
+import { StyleSheet, View, Text, Image, Button, FlatList, TouchableOpacity, TextInput, Keyboard, Modal, Alert, Picker } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 import  SwitchSelector  from "react-native-switch-selector";
-// import DatePicker from 'react-native-date-picker';
+import SelectDropdown from 'react-native-select-dropdown';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { firebase } from '../firebase/config';
 import { useNavigation } from '@react-navigation/native';
@@ -11,19 +11,20 @@ import { FontAwesome } from '@expo/vector-icons';
 const Home = ({navigation}) => {
 
     //for managing lists
-    const [lists, setLists] = useState([]);
+    const [lists, setLists] = useState(['']);
     const listsRef = firebase.firestore().collection('lists');
     const [addList, setAddList] = useState([]);
-
+    const [listDropDown, setListDropDown] = useState([]);
     // for managing tasks
     const [tasks, setTasks] = useState([]);
     const tasksRef = firebase.firestore().collection('tasks');
     //add states for all properties
     const [addTaskName, setAddTaskName] = useState('');
-    const [addPriority, setAddPriority] = useState('');
-    const [addTimeAndDate, setAddTimeAndDate] = useState(new Date());
-    const [addTimeToComplete, setAddTimeToComplete] = useState(new Date());
-    // const [addIsCompleted, setAddIsCompleted] = useState('');
+    const [addPriority, setAddPriority] = useState('low');
+    const [addTimeAndDate, setAddTimeAndDate] = useState('');
+    const [addTimeToComplete, setAddTimeToComplete] = useState('');
+    const [hours, setHours] = useState('');
+    const [minutes, setMinutes] = useState('');
     const [addBelongsTo, setAddBelongsTo] = useState('');
 
     //for +List modal
@@ -33,7 +34,8 @@ const Home = ({navigation}) => {
     const [addTaskModalVisible, setAddTaskModalVisible] = useState(false);
 
     //for date picker modal
-    const [open, setOpen] = useState(false)
+    const [openDateTimePicker, setOpenDateTimePicker] = useState(false)
+    const [openTimePicker, setOpenTimePicker] = useState(false)
 
     //get data from firebase
     useEffect(() => {
@@ -43,15 +45,24 @@ const Home = ({navigation}) => {
             next: (querySnapshot) => {
                 const lists = [];
                 querySnapshot.forEach((doc) => {
-                    const {heading} = doc.data()
+                    const {name} = doc.data()
                     lists.push({
                         id: doc.id,
-                        heading,
+                        name,
                     })
                 })
                 setLists(lists);
             }
         });
+
+        if(lists.length > 0) {
+            const list = [];
+            lists.forEach((doc) => {
+                const name = doc.name;
+                list.push(name);
+            })
+            setListDropDown(list);
+        };
 
         //for tasks
         tasksRef.orderBy('dateCreated', 'asc').onSnapshot({
@@ -59,10 +70,10 @@ const Home = ({navigation}) => {
             next: (querySnapshot) => {
                 const tasks = [];
                 querySnapshot.forEach((doc) => {
-                    const {heading} = doc.data()
+                    const {name} = doc.data()
                     tasks.push({
                         id: doc.id,
-                        heading,
+                        name,
                     })
                 })
                 setTasks(tasks);
@@ -70,6 +81,8 @@ const Home = ({navigation}) => {
         });
 
     }, []);
+
+    // console.log(listDropDown);
     
     //delete a list
     const deleteList = (lists) => {
@@ -90,7 +103,7 @@ const Home = ({navigation}) => {
         if(addList && addList.length > 0){
             const timestamp = firebase.firestore.FieldValue.serverTimestamp();
             const data = {
-                heading: addList,
+                name: addList,
                 dateCreated: timestamp,
             };
             listsRef
@@ -105,6 +118,7 @@ const Home = ({navigation}) => {
         }else{
             alert('List name cannot be empty!');
         };
+        listDropDown.push(addList);
         setAddListModalVisible(!addListModalVisible);
     };
 
@@ -128,7 +142,7 @@ const Home = ({navigation}) => {
             const timestamp = firebase.firestore.FieldValue.serverTimestamp();
             // need to edit this part
             const data = {
-                heading: addTaskName,
+                name: addTaskName,
                 priority: addPriority,
                 timeAndDate: addTimeAndDate,
                 timeToComplete: addTimeToComplete,
@@ -140,10 +154,12 @@ const Home = ({navigation}) => {
             .add(data)
             .then(() => {
                 setAddTaskName('');
-                setAddPriority('');
+                setAddPriority('low');
                 setAddTimeAndDate('');
                 setAddTimeToComplete('');
                 setAddBelongsTo('');
+                setHours('');
+                setMinutes('');
                 Keyboard.dismiss();
             })
             .catch((error) => {
@@ -153,6 +169,15 @@ const Home = ({navigation}) => {
             alert('Fields cannot be empty!');
         };
         setAddTaskModalVisible(!addTaskModalVisible);
+    };
+
+    const cancelAddTaskPressed = () => {
+        setAddTaskModalVisible(!addTaskModalVisible);
+        setAddTaskName('');
+        setAddPriority('');
+        setAddTimeAndDate('');
+        setAddTimeToComplete('');
+        setAddBelongsTo('');
     };
 
     const rightSwipeActions = (item) => {
@@ -198,7 +223,7 @@ const Home = ({navigation}) => {
                         >
                             <View>
                                 <TouchableOpacity style={styles.list}>
-                                    <Text style={{textAlign: 'center', paddingTop: 5, fontSize: 18,}}>{item.heading}</Text>
+                                    <Text style={{textAlign: 'center', paddingTop: 5, fontSize: 18,}}>{item.name}</Text>
                                 </TouchableOpacity>
 
                             </View>
@@ -256,7 +281,7 @@ const Home = ({navigation}) => {
                                 style={styles.textInput}
                                 placeholder='List Name'
                                 placeholderTextColor={'grey'}
-                                onChangeText={(heading) => setAddList(heading)}
+                                onChangeText={(name) => setAddList(name)}
                                 value={addList}
                             />
 
@@ -289,16 +314,16 @@ const Home = ({navigation}) => {
                     }}
                 >
 
-                    <View style={styles.centeredView}>
-                        <View style={styles.modalView}>
+                    <View style={[styles.centeredView, {marginTop: "10%",}]}>
+                        <View style={[styles.modalView, {margin: 20,}]}>
 
                             <Text style={styles.headerText}>Add A Task</Text>
-
+                                
                             <TextInput 
                                 style={styles.textInput}
                                 placeholder='Task Name'
                                 placeholderTextColor={'grey'}
-                                onChangeText={(heading) => setAddTaskName(heading)}
+                                onChangeText={(name) => setAddTaskName(name)}
                                 value={addTaskName}
                             />
 
@@ -320,65 +345,102 @@ const Home = ({navigation}) => {
                             />
 
                             <Text style={{paddingTop: 15, fontSize: 16,}}>Set a deadline:</Text>
-                            
-                            
+                                                        
                             <View>  
                                 <DateTimePickerModal 
                                     mode='datetime'
                                     display='default'
-                                    isVisible={open}
-                                    date={addTimeAndDate}
-                                    // onConfirm={(date) => {
-                                    //     setOpen(false)
-                                    //     setAddTimeAndDate(date)
-                                    // }}
-                                    onConfirm={()=>{console.log('on confirm')}}
-                                    // onCancel={() => {
-                                    //     setOpen(false)
-                                    // }}
-                                    onCancel={()=>{setOpen(false); console.log('on cancel')}}
+                                    isVisible={openDateTimePicker}
+                                    date={new Date()}
+                                    onConfirm={(date) => {
+                                        setOpenDateTimePicker(false);
+                                        setAddTimeAndDate(date);
+                                        console.log('Date Time Picker confirm pressed');
+                                        console.log('datetime set:' + date.toString());
+                                    }}
+                                    
+                                    onCancel={() => {
+                                        setOpenDateTimePicker(false);
+                                        console.log('Date Time Picker cancel pressed');
+                                    }}
+                                    // onConfirm={()=>{console.log('on confirm')}}
+                                    // onCancel={()=>{setOpenDateTimePicker(false); console.log('on cancel')}}
                                 />
 
                                 <TouchableOpacity 
-                                    style={{marginTop: 10, borderWidth: 0.3, padding: 10, borderRadius: 15, backgroundColor: '#E5DCC5'}}
-                                    onPress={() => setOpen(true)}    
+                                    style={{marginTop: 10, borderWidth: 0.3, padding: 10, borderRadius: 15, backgroundColor: '#E5DCC5', justifyContent: 'center', alignItems: 'center',}}
+                                    onPress={() => setOpenDateTimePicker(true)}    
                                 >
-                                    <Text>Set Deadline</Text>
+                                    <Text>Open Date Time Picker</Text>
                                  </TouchableOpacity>
+                                
+                                 <Text style={{paddingTop: 15, fontSize: 16, color: '#CC7722'}}>
+                                    {addTimeAndDate
+                                        .toLocaleString([], {
+                                        year: 'numeric',
+                                        month: 'numeric',
+                                        day: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                    })}
+                                </Text>
                             </View>
                             
 
                             <Text style={{paddingTop: 15, fontSize: 16,}}>Set estimated time to complete task:</Text>
-
-                            <View>  
-                                <DateTimePickerModal 
-                                    mode='time'
-                                    display='default'
-                                    isVisible={open}
-                                    date={addTimeToComplete}
-                                    // onConfirm={(date) => {
-                                    //     setOpen(false)
-                                    //     setAddTimeAndDate(date)
-                                    // }}
-                                    onConfirm={()=>{console.log('on confirm')}}
-                                    // onCancel={() => {
-                                    //     setOpen(false)
-                                    // }}
-                                    onCancel={()=>{setOpen(false); console.log('on cancel')}}
+                            <View style={{flexDirection: 'row', justifyContent: 'center',}}>
+                                <TextInput 
+                                    style={[styles.textInput, {marginRight: 10,}]}
+                                    placeholder='Hours'
+                                    placeholderTextColor={'grey'}
+                                    onChangeText={(hours) => setHours(hours)}
+                                    value={hours}
                                 />
-
-                                <TouchableOpacity 
-                                    style={{marginTop: 10, borderWidth: 0.3, padding: 10, borderRadius: 15, backgroundColor: '#E5DCC5'}}
-                                    onPress={() => setOpen(true)}    
-                                >
-                                    <Text>Est. Time to Complete</Text>
-                                 </TouchableOpacity>
+                                 <TextInput 
+                                    style={styles.textInput}
+                                    placeholder='Minutes'
+                                    placeholderTextColor={'grey'}
+                                    onChangeText={(minutes) => setMinutes(minutes)}
+                                    value={minutes}
+                                />
+                                
                             </View>
 
-                            <Text style={{paddingTop: 15, fontSize: 16,}}>*belongsTo* List Picker Here</Text>
+                            <TouchableOpacity 
+                                    style={{marginLeft: 5, marginTop: 10, padding: 10, borderWidth: 0.3, borderRadius: 5, backgroundColor: '#E5DCC5', justifyContent: 'center',}}
+                                    onPress={() => {
+                                        const timeToComplete = hours + ':' + minutes;
+                                        if(timeToComplete != ''){
+                                            setAddTimeToComplete(timeToComplete);
+                                            console.log('time to complete:' + timeToComplete);
+                                            
+                                        }else{
+                                            alert('Hours and minutes fields cannot be empty!');
+                                        };                                   
+                                    }}    
+                                >
+                                    <Text>Confirm</Text>
+                            </TouchableOpacity>
+                            
+                            <Text style={{paddingTop: 15, fontSize: 16, color: '#CC7722'}}>{addTimeToComplete + ' (hh:mm)'}</Text>
+
+                            <Text style={{paddingTop: 15, fontSize: 16, marginBottom: 5,}}>Add to a List:</Text>
+                            <SelectDropdown 
+                                data={listDropDown}
+                                onSelect={(selectedItem, index) => {
+                                    setAddBelongsTo(selectedItem);
+                                    console.log(selectedItem, index);
+                                  }}
+                                buttonTextStyle={{fontSize: 15,}}
+                                renderDropdownIcon={isOpened => {
+                                return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'} color={'#444'} size={18} />;
+                                }}
+                                dropdownIconPosition={'right'}
+
+                            />
 
 
-                            <TouchableOpacity onPress={() => setAddTaskModalVisible(!addTaskModalVisible)}>
+                            <TouchableOpacity onPress={() =>cancelAddTaskPressed()}>
                                 <View style={[styles.button, {marginTop: 30, backgroundColor: 'maroon', }]}>
                                     <Text style={[styles.buttonText, {fontSize: 16,}]}>Cancel</Text>
                                 </View>
