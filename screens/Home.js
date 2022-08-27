@@ -168,7 +168,7 @@ const Home = ({navigation}) => {
                 <FontAwesome 
                     name='trash-o'
                     color='red'
-                    size='30x'
+                    size={30}
                     onPress={ () => deleteList(item) }
                 />
             </View>
@@ -449,11 +449,6 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         padding: 35,
         alignItems: "center",
-        shadowColor: "#000",
-        shadowOffset: {
-          width: 0,
-          height: 2
-        },
       },
       textInput: {
         // marginHorizontal: 30,
