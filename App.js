@@ -6,6 +6,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Home from './screens/Home';
 import Details from './screens/Details';
 import Settings from './screens/Settings';
+import ListView from './screens/ListView';
 
 //create a navi stack for the
 //required screens
@@ -15,7 +16,7 @@ function HomeStackScreen() {
   return (
     <HomeStack.Navigator screenOptions={{headerShown: false,}}>
       <HomeStack.Screen name="Home" component={Home} />
-      <HomeStack.Screen name="Details" component={Details} />
+      <HomeStack.Screen name="ListView" component={ListView} />
     </HomeStack.Navigator>
   );
 };

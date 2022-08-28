@@ -15,10 +15,14 @@ const Home = ({navigation}) => {
     const listsRef = firebase.firestore().collection('lists');
     const [addList, setAddList] = useState([]);
     const [listDropDown, setListDropDown] = useState([]);
+    //add a state for selected list
+    const [selectedList, setSelectedList] = useState();
+
     // for managing tasks
     const [tasks, setTasks] = useState([]);
     const tasksRef = firebase.firestore().collection('tasks');
-    //add states for all properties
+
+    //add states for all task properties
     const [addTaskName, setAddTaskName] = useState('');
     const [addPriority, setAddPriority] = useState('low');
     const [addTimeAndDate, setAddTimeAndDate] = useState('');
@@ -34,8 +38,8 @@ const Home = ({navigation}) => {
     const [addTaskModalVisible, setAddTaskModalVisible] = useState(false);
 
     //for date picker modal
-    const [openDateTimePicker, setOpenDateTimePicker] = useState(false)
-    const [openTimePicker, setOpenTimePicker] = useState(false)
+    const [openDateTimePicker, setOpenDateTimePicker] = useState(false);
+    const [openTimePicker, setOpenTimePicker] = useState(false);
 
     //get data from firebase
     useEffect(() => {
@@ -122,20 +126,6 @@ const Home = ({navigation}) => {
         setAddListModalVisible(!addListModalVisible);
     };
 
-    //delete a task
-    const deleteTask = (tasks) => {
-        // console.log(lists);
-        tasksRef
-        .doc(tasks.id)
-        .delete()
-        .then(() => {
-            // alert('List deleted');
-        })
-        .catch(error => {
-            alert(error);
-        })
-    };
-
     //add a task
     const addNewTask = () => {
         if(addTaskName && addTaskName.length > 0){
@@ -202,13 +192,14 @@ const Home = ({navigation}) => {
     };
 
     return(
+        
         <View style={styles.container}>
             {/* title */}
-            <View style={styles.headerContainer}>
+            {/* <View style={styles.headerContainer}>
                 <Text style={styles.headerText}>
-                    
+                    Lists
                 </Text>
-            </View>
+            </View> */}
             
             {/* Flatlist of tasklists */}
             <View style={styles.bodyContainer}>
@@ -222,7 +213,14 @@ const Home = ({navigation}) => {
                             renderRightActions={() => rightSwipeActions(item)}
                         >
                             <View>
-                                <TouchableOpacity style={styles.list}>
+                                <TouchableOpacity 
+                                    style={styles.list} 
+                                    onPress={() => {navigation.navigate('ListView', 
+                                        {
+                                            listName: item.name,
+                                        }
+                                    )}}
+                                >
                                     <Text style={{textAlign: 'center', paddingTop: 5, fontSize: 18,}}>{item.name}</Text>
                                 </TouchableOpacity>
 
@@ -244,7 +242,15 @@ const Home = ({navigation}) => {
                 </TouchableOpacity>
 
                 {/* To do: onPress function--> bring user to all tasks (ListView) page */}
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity 
+                    style={styles.button}
+                    onPress={() => {navigation.navigate('ListView', 
+                                        {
+                                            listName: 'All Tasks',
+                                        }
+                                    )}}
+                >
+                
                     <Text style={styles.buttonText}>
                         All Tasks
                     </Text>
@@ -474,14 +480,22 @@ const styles = StyleSheet.create({
         //flexDirection: 'column',
         backgroundColor: '#E5DCC5',
         borderRadius: 15,
-        padding: 15,
+        // padding: 15,
     },
     headerContainer: {
         //flexDirection: 'row',
         justifyContent: 'center',
+        // backgroundColor: '#CC7722',
+        marginTop: '10%',
+        marginBottom: 10,
+        paddingVertical: '3%',
+        // borderRadius: 10,
+        borderBottomWidth: 1,
+        // borderLeftWidth: 1,
+        // borderRightWidth: 1,
     },
     headerText: {
-        fontSize: 20,
+        fontSize: 25,
         fontWeight: 'bold',
         color: '#0B3948',
         textAlign: 'center',
@@ -523,12 +537,9 @@ const styles = StyleSheet.create({
     },
     centeredView: {
         // flex: 1,
-        
         justifyContent: "center",
         alignItems: "center",
         marginTop: '50%',
-        
-        
       },
       modalView: {
         // flexDirection: 'column',
