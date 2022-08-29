@@ -21,14 +21,15 @@ const Home = ({navigation}) => {
     // for managing tasks
     const [tasks, setTasks] = useState([]);
     const tasksRef = firebase.firestore().collection('tasks');
+    const [deleteTasks, setDeleteTasks] = useState([]);
 
     //add states for all task properties
     const [addTaskName, setAddTaskName] = useState('');
     const [addPriority, setAddPriority] = useState('low');
     const [addTimeAndDate, setAddTimeAndDate] = useState('');
     const [addTimeToComplete, setAddTimeToComplete] = useState('');
-    const [hours, setHours] = useState('');
-    const [minutes, setMinutes] = useState('');
+    const [hours, setHours] = useState('0');
+    const [minutes, setMinutes] = useState('0');
     const [addBelongsTo, setAddBelongsTo] = useState('');
 
     //for +List modal
@@ -48,25 +49,21 @@ const Home = ({navigation}) => {
             error: (e) => console.log(e),
             next: (querySnapshot) => {
                 const lists = [];
+                const listsDropDown = [];
                 querySnapshot.forEach((doc) => {
                     const {name} = doc.data()
+                    const listsDDName = doc.data().name
                     lists.push({
                         id: doc.id,
                         name,
                     })
+                    listsDropDown.push(listsDDName)
                 })
                 setLists(lists);
+                setListDropDown(listsDropDown);
+                // console.log(listDropDown);
             }
         });
-
-        if(lists.length > 0) {
-            const list = [];
-            lists.forEach((doc) => {
-                const name = doc.name;
-                list.push(name);
-            })
-            setListDropDown(list);
-        };
 
         //for tasks
         tasksRef.orderBy('dateCreated', 'asc').onSnapshot({
@@ -88,18 +85,52 @@ const Home = ({navigation}) => {
 
     // console.log(listDropDown);
     
-    //delete a list
-    const deleteList = (lists) => {
+    //function to delete a task
+    const deleteTask = (task) => {
         // console.log(lists);
-        listsRef
-        .doc(lists.id)
+        tasksRef
+        .doc(task.id)
         .delete()
         .then(() => {
-            // alert('List deleted');
+            // alert('Task deleted');
         })
         .catch(error => {
             alert(error);
         })
+    };
+
+    //delete a list
+    const deleteList = (list) => {
+        // console.log(lists);
+        listsRef
+        .doc(list.id)
+        .delete()
+        .then(() => {
+            // alert('List deleted');            
+        })
+        .catch(error => {
+            alert(error);
+        })
+
+        //get tasks belonging to deleted list
+        tasksRef.where('belongsTo', '==', list.name).orderBy('dateCreated', 'asc').onSnapshot({
+            error: (e) => console.log(e),
+            next: (querySnapshot) => {
+                const tasks = [];
+                querySnapshot.forEach((doc) => {
+                    tasks.push({
+                        id: doc.id,
+                    })
+                })
+                setDeleteTasks(tasks);
+                // console.log(tasks)
+            }
+        });
+
+        deleteTasks.forEach((doc) => {
+            deleteTask(doc);
+        });
+
     };
 
     //add a list
@@ -333,11 +364,10 @@ const Home = ({navigation}) => {
                                 value={addTaskName}
                             />
 
-                            <Text style={{paddingTop: 15, fontSize: 16,}}>Set priority:</Text>
+                            <Text style={{paddingTop: 15, fontSize: 16,}}>Priority:</Text>
                             
                             <SwitchSelector 
                                 initial={0}
-                                // change console.log to setAddPriority
                                 onPress={(value) => setAddPriority(value)}
                                 selectedColor='black'
                                 borderColor='black'
@@ -350,7 +380,7 @@ const Home = ({navigation}) => {
                                 ]}
                             />
 
-                            <Text style={{paddingTop: 15, fontSize: 16,}}>Set a deadline:</Text>
+                            <Text style={{paddingTop: 15, fontSize: 16,}}>Deadline:</Text>
                                                         
                             <View>  
                                 <DateTimePickerModal 
@@ -361,13 +391,13 @@ const Home = ({navigation}) => {
                                     onConfirm={(date) => {
                                         setOpenDateTimePicker(false);
                                         setAddTimeAndDate(date);
-                                        console.log('Date Time Picker confirm pressed');
-                                        console.log('datetime set:' + date.toString());
+                                        // console.log('Date Time Picker confirm pressed');
+                                        // console.log('datetime set:' + date.toString());
                                     }}
                                     
                                     onCancel={() => {
                                         setOpenDateTimePicker(false);
-                                        console.log('Date Time Picker cancel pressed');
+                                        // console.log('Date Time Picker cancel pressed');
                                     }}
                                     // onConfirm={()=>{console.log('on confirm')}}
                                     // onCancel={()=>{setOpenDateTimePicker(false); console.log('on cancel')}}
@@ -393,21 +423,15 @@ const Home = ({navigation}) => {
                             </View>
                             
 
-                            <Text style={{paddingTop: 15, fontSize: 16,}}>Set estimated time to complete task:</Text>
+                            <Text style={{paddingTop: 15, fontSize: 16,}}>Est time to complete task (mins):</Text>
                             <View style={{flexDirection: 'row', justifyContent: 'center',}}>
-                                <TextInput 
-                                    style={[styles.textInput, {marginRight: 10,}]}
-                                    placeholder='Hours'
-                                    placeholderTextColor={'grey'}
-                                    onChangeText={(hours) => setHours(hours)}
-                                    value={hours}
-                                />
                                  <TextInput 
                                     style={styles.textInput}
                                     placeholder='Minutes'
                                     placeholderTextColor={'grey'}
                                     onChangeText={(minutes) => setMinutes(minutes)}
                                     value={minutes}
+                                    defaultValue='0'
                                 />
                                 
                             </View>
@@ -415,27 +439,29 @@ const Home = ({navigation}) => {
                             <TouchableOpacity 
                                     style={{marginLeft: 5, marginTop: 10, padding: 10, borderWidth: 0.3, borderRadius: 5, backgroundColor: '#E5DCC5', justifyContent: 'center',}}
                                     onPress={() => {
-                                        const timeToComplete = hours + ':' + minutes;
+                                        const timeToComplete = minutes;
                                         if(timeToComplete != ''){
                                             setAddTimeToComplete(timeToComplete);
-                                            console.log('time to complete:' + timeToComplete);
+                                            // console.log('time to complete:' + timeToComplete);
                                             
                                         }else{
-                                            alert('Hours and minutes fields cannot be empty!');
+                                            alert('Minutes field cannot be empty!');
                                         };                                   
                                     }}    
                                 >
                                     <Text>Confirm</Text>
                             </TouchableOpacity>
                             
-                            <Text style={{paddingTop: 15, fontSize: 16, color: '#CC7722'}}>{addTimeToComplete + ' (hh:mm)'}</Text>
+                            {addTimeToComplete != '' ? 
+                            <Text style={{paddingTop: 15, fontSize: 16, color: '#CC7722'}}>{addTimeToComplete + ' (mins)'}</Text>
+                             : <View></View>}
 
                             <Text style={{paddingTop: 15, fontSize: 16, marginBottom: 5,}}>Add to a List:</Text>
                             <SelectDropdown 
                                 data={listDropDown}
                                 onSelect={(selectedItem, index) => {
                                     setAddBelongsTo(selectedItem);
-                                    console.log(selectedItem, index);
+                                    // console.log(selectedItem, index);
                                   }}
                                 buttonTextStyle={{fontSize: 15,}}
                                 renderDropdownIcon={isOpened => {
