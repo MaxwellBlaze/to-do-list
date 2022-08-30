@@ -36,7 +36,7 @@ const ListView = ({route, navigation}) => {
 
     //add states for all task properties
     const [taskName, setTaskName] = useState('');
-    const [priority, setPriority] = useState('low');
+    const [priority, setPriority] = useState(1);
     const [timeAndDate, setTimeAndDate] = useState('');
     const [timeToComplete, setTimeToComplete] = useState('');
     const [minutes, setMinutes] = useState('0');
@@ -70,7 +70,12 @@ const ListView = ({route, navigation}) => {
         });
 
         //for tasks
-        tasksRef.where('belongsTo', '==', listName).orderBy('dateCreated', 'asc').onSnapshot({
+        tasksRef
+        .where('belongsTo', '==', listName)
+        .orderBy('timeAndDate', 'asc')
+        .orderBy('priority', 'desc')
+        .orderBy('timeToComplete', 'desc')
+        .onSnapshot({
             error: (e) => console.log(e),
             next: (querySnapshot) => {
                 const tasks = [];
@@ -80,7 +85,7 @@ const ListView = ({route, navigation}) => {
                         name: doc.data().name,
                         priority: doc.data().priority,
                         timeAndDate: doc.data().timeAndDate,
-                        timeToComplete: doc.data().timeToComplete,
+                        timeToComplete: parseInt(doc.data().timeToComplete),
                         isCompleted: doc.data().isCompleted,
                         belongsTo: doc.data().belongsTo,
                         dateCreated: doc.data().dateCreated,
@@ -92,7 +97,11 @@ const ListView = ({route, navigation}) => {
         });
 
         //for tasks
-        tasksRef.orderBy('dateCreated', 'asc').onSnapshot({
+        tasksRef
+        .orderBy('timeAndDate', 'asc')
+        .orderBy('priority', 'desc')
+        .orderBy('timeToComplete', 'desc')
+        .onSnapshot({
             error: (e) => console.log(e),
             next: (querySnapshot) => {
                 const tasks = [];
@@ -102,7 +111,7 @@ const ListView = ({route, navigation}) => {
                         name: doc.data().name,
                         priority: doc.data().priority,
                         timeAndDate: doc.data().timeAndDate,
-                        timeToComplete: doc.data().timeToComplete,
+                        timeToComplete: parseInt(doc.data().timeToComplete),
                         isCompleted: doc.data().isCompleted,
                         belongsTo: doc.data().belongsTo,
                         dateCreated: doc.data().dateCreated,
@@ -147,7 +156,7 @@ const ListView = ({route, navigation}) => {
                 name: taskName,
                 priority: priority,
                 timeAndDate: timeAndDate,
-                timeToComplete: timeToComplete,
+                timeToComplete: parseInt(timeToComplete),
                 isCompleted: false,
                 belongsTo: belongsTo,
                 dateCreated: timestamp,
@@ -156,7 +165,7 @@ const ListView = ({route, navigation}) => {
             .add(data)
             .then(() => {
                 setTaskName('');
-                setPriority('low');
+                setPriority(1);
                 setTimeAndDate('');
                 setTimeToComplete('');
                 setBelongsTo(listName);
@@ -180,14 +189,14 @@ const ListView = ({route, navigation}) => {
                 name: taskName,
                 priority: priority,
                 timeAndDate: timeAndDate,
-                timeToComplete: timeToComplete,
+                timeToComplete: parseInt(timeToComplete),
                 isCompleted: task.isCompleted,
                 belongsTo: task.belongsTo,
                 dateCreated: task.dateCreated,
             }).then(() => {
                 //console.log('task updated');
                 setTaskName('');
-                setPriority('low');
+                setPriority(1);
                 setTimeAndDate('');
                 setTimeToComplete('');
                 setMinutes('');
@@ -204,7 +213,7 @@ const ListView = ({route, navigation}) => {
         setAddTaskModalVisible(false);
         setEditTaskModalVisible(false);
         setTaskName('');
-        setPriority('low');
+        setPriority(1);
         setTimeAndDate('');
         setTimeToComplete('0');
         setBelongsTo(listName);
@@ -278,12 +287,13 @@ const ListView = ({route, navigation}) => {
         });
     };
 
-    const smartSortButtonPressed = () => {
-        tasksRef
-        .orderBy('priority', 'desc')
-        .orderBy('timeAndDate', 'desc')
-        .orderBy('timeToComplete', 'desc')
-    }
+    // const smartSortButtonPressed = () => {
+    //     tasksRef
+    //     .where('belongsTo', '==', listName)
+    //     .orderBy('priority', 'desc')
+    //     .orderBy('timeAndDate', 'desc')
+    //     .orderBy('timeToComplete', 'desc')
+    // };
 
     return(
         <View style={styles.container}>
@@ -314,12 +324,12 @@ const ListView = ({route, navigation}) => {
                                     </Text>
 
                                     {/* priority */}
-                                    {item.priority == 'med' ? 
+                                    {item.priority == 2 ? 
                                     <View style={{borderTopWidth: 0.5, borderBottomWidth: 0.5, backgroundColor: 'yellow'}}>
                                         <Text style={{textAlign: 'center', padding: 5, fontSize: 15, color: 'yellow'}}>
                                             {/* {'Priority: ' + item.priority} */}
                                         </Text> 
-                                    </View> : item.priority == 'high' ? 
+                                    </View> : item.priority == 3 ? 
                                     <View style={{borderTopWidth: 0.5, borderBottomWidth: 0.5, backgroundColor: 'red'}}>
                                         <Text style={{textAlign: 'center', padding: 5, fontSize: 15, color: 'red'}}>
                                             {/* {'Priority: ' + item.priority} */}
@@ -413,9 +423,9 @@ const ListView = ({route, navigation}) => {
                                 style={{borderWidth:0.3, borderRadius: 50, marginTop: 10,}}
                                 backgroundColor='#E5DCC5'
                                 options={[
-                                    { label: "Low", value: "low", activeColor: 'green' }, 
-                                    { label: "Medium", value: "med", activeColor: 'yellow' }, 
-                                    { label: "High", value: "high", activeColor: 'red' }, 
+                                    { label: "Low", value: 1, activeColor: 'green' }, 
+                                    { label: "Medium", value: 2, activeColor: 'yellow' }, 
+                                    { label: "High", value: 3, activeColor: 'red' }, 
                                 ]}
                             />
 
@@ -547,9 +557,9 @@ const ListView = ({route, navigation}) => {
                                 style={{borderWidth:0.3, borderRadius: 50, marginTop: 10,}}
                                 backgroundColor='#E5DCC5'
                                 options={[
-                                    { label: "Low", value: "low", activeColor: 'green' }, 
-                                    { label: "Medium", value: "med", activeColor: 'yellow' }, 
-                                    { label: "High", value: "high", activeColor: 'red' }, 
+                                    { label: "Low", value: 1, activeColor: 'green' }, 
+                                    { label: "Medium", value: 2, activeColor: 'yellow' }, 
+                                    { label: "High", value: 3, activeColor: 'red' }, 
                                 ]}
                             />
 

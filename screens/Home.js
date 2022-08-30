@@ -25,7 +25,7 @@ const Home = ({navigation}) => {
 
     //add states for all task properties
     const [addTaskName, setAddTaskName] = useState('');
-    const [addPriority, setAddPriority] = useState('low');
+    const [addPriority, setAddPriority] = useState(1);
     const [addTimeAndDate, setAddTimeAndDate] = useState('');
     const [addTimeToComplete, setAddTimeToComplete] = useState('');
     const [hours, setHours] = useState('0');
@@ -168,7 +168,7 @@ const Home = ({navigation}) => {
                 name: addTaskName,
                 priority: addPriority,
                 timeAndDate: addTimeAndDate,
-                timeToComplete: addTimeToComplete,
+                timeToComplete: parseInt(addTimeToComplete),
                 isCompleted: false,
                 belongsTo: addBelongsTo,
                 dateCreated: timestamp,
@@ -177,7 +177,7 @@ const Home = ({navigation}) => {
             .add(data)
             .then(() => {
                 setAddTaskName('');
-                setAddPriority('low');
+                setAddPriority(1);
                 setAddTimeAndDate('');
                 setAddTimeToComplete('');
                 setAddBelongsTo('');
@@ -197,7 +197,7 @@ const Home = ({navigation}) => {
     const cancelAddTaskPressed = () => {
         setAddTaskModalVisible(!addTaskModalVisible);
         setAddTaskName('');
-        setAddPriority('');
+        setAddPriority(1);
         setAddTimeAndDate('');
         setAddTimeToComplete('');
         setAddBelongsTo('');
@@ -376,9 +376,9 @@ const Home = ({navigation}) => {
                                 style={{borderWidth:0.3, borderRadius: 50, marginTop: 10,}}
                                 backgroundColor='#E5DCC5'
                                 options={[
-                                    { label: "Low", value: "low", activeColor: 'green' }, 
-                                    { label: "Medium", value: "med", activeColor: 'yellow' }, 
-                                    { label: "High", value: "high", activeColor: 'red' }, 
+                                    { label: "Low", value: 1, activeColor: 'green' }, 
+                                    { label: "Medium", value: 2, activeColor: 'yellow' }, 
+                                    { label: "High", value: 3, activeColor: 'red' }, 
                                 ]}
                             />
 
