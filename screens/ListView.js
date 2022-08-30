@@ -37,21 +37,24 @@ const ListView = ({route, navigation}) => {
     const [addPriority, setAddPriority] = useState('low');
     const [addTimeAndDate, setAddTimeAndDate] = useState('');
     const [addTimeToComplete, setAddTimeToComplete] = useState('');
-    const [hours, setHours] = useState('0');
+    // const [hours, setHours] = useState('0');
     const [minutes, setMinutes] = useState('0');
     const [addBelongsTo, setAddBelongsTo] = useState(listName);
 
     //states for editing tasks
-    const [editTaskName, setEEditTaskName] = useState('');
+    const [editTaskName, setEditTaskName] = useState('');
     const [editPriority, setEditPriority] = useState('low');
     const [editTimeAndDate, setEditTimeAndDate] = useState('');
     const [editTimeToComplete, setEditTimeToComplete] = useState('');
-    const [editHours, setEditHours] = useState('');
+    // const [editHours, setEditHours] = useState('');
     const [editMinutes, setEditMinutes] = useState('');
     // const [editBelongsTo, setEditBelongsTo] = useState(listName);
 
     //for +Task modal
     const [addTaskModalVisible, setAddTaskModalVisible] = useState(false);
+
+    //for Edit Task modal
+    const [editTaskModalVisible, setEditTaskModalVisible] = useState(false);
 
     //for date picker modal
     const [openDateTimePicker, setOpenDateTimePicker] = useState(false);
@@ -176,6 +179,47 @@ const ListView = ({route, navigation}) => {
         setAddTaskModalVisible(!addTaskModalVisible);
     };
 
+    const openEditTaskModal = (task) => {
+        setEditTaskModalVisible(true);
+    };
+
+    const updateTask = (task) => {
+        if(editTaskName && editTaskName > 0){
+            tasksRef
+            .doc(task.id)
+            .update({
+                name: editTaskName,
+                priority: editPriority,
+                timeAndDate: editTimeAndDate,
+                timeToComplete: editTimeToComplete,
+                isCompleted: task.isCompleted,
+                belongsTo: task.belongsTo,
+                dateCreated: task.dateCreated,
+            }).then(() => {
+                //console.log('task updated');
+                setEditTaskName('');
+                setEditPriority('low');
+                setEditTimeAndDate('');
+                setEditTimeToComplete('');
+                setEditMinutes('');
+                Keyboard.dismiss();
+            }).catch((error) => {
+                alert(error);
+            })
+        }
+        setEditTaskModalVisible(!editTaskModalVisible);
+    };
+
+    const cancelEditTaskPressed = () => {
+        setEditTaskModalVisible(!editTaskModalVisible);
+        setEditTaskName('');
+        setEditPriority('low');
+        setEditTimeAndDate('');
+        setEditTimeToComplete('');
+        setEditMinutes('');
+        setAddBelongsTo(listName);
+    };
+
     const cancelAddTaskPressed = () => {
         setAddTaskModalVisible(!addTaskModalVisible);
         setAddTaskName('');
@@ -251,7 +295,7 @@ const ListView = ({route, navigation}) => {
                             <View style={[styles.task, {flexDirection: 'row',}]}>
                                 <View style={{flexDirection: 'column', borderRightWidth: 0.5, padding: 5, flex:1,}}>
                                     {/* task name */}
-                                    <Text style={{textAlign: 'center', padding: 5, fontSize: 18, fontWeight: 'bold', borderBottomWidth: 1,}}>
+                                    <Text style={{textAlign: 'center', padding: 1, fontSize: 18, fontWeight: 'bold', borderBottomWidth: 1,}}>
                                         {item.name}
                                     </Text>
 
@@ -293,13 +337,13 @@ const ListView = ({route, navigation}) => {
                                     </View> : <View></View>}
                                 </View>
                                 <Checkbox
-                                    style={{alignSelf: 'center', margin: 8,}}
+                                    style={{alignSelf: 'center', margin: 10,}}
+                                    //change to item.isCompleted
                                     value={isChecked}
+                                    //change to onChecked function, to be implemented
                                     onValueChange={setChecked}
                                     color={isChecked ? 'green' : undefined}
-                                />
-                                {/* <Text>O</Text> */}
-                                
+                                />                               
 
                             </View>
                             
@@ -552,8 +596,8 @@ const styles = StyleSheet.create({
       },
       task: {
         borderWidth: 0.3, 
-        margin:10,
-        padding: 5,
+        margin:5,
+        // padding: 5,
         borderRadius: 10,
         backgroundColor: 'white',
 
