@@ -101,16 +101,6 @@ const Home = ({navigation}) => {
 
     //delete a list
     const deleteList = (list) => {
-        // console.log(lists);
-        listsRef
-        .doc(list.id)
-        .delete()
-        .then(() => {
-            // alert('List deleted');            
-        })
-        .catch(error => {
-            alert(error);
-        })
 
         //get tasks belonging to deleted list
         tasksRef.where('belongsTo', '==', list.name).orderBy('dateCreated', 'asc').onSnapshot({
@@ -122,15 +112,27 @@ const Home = ({navigation}) => {
                         id: doc.id,
                     })
                 })
+                console.log(tasks);
                 setDeleteTasks(tasks);
                 // console.log(tasks)
             }
         });
 
+        //delete the tasks belonging to the list
         deleteTasks.forEach((doc) => {
             deleteTask(doc);
         });
 
+        //delete the list
+        listsRef
+        .doc(list.id)
+        .delete()
+        .then(() => {
+            // alert('List deleted');            
+        })
+        .catch(error => {
+            alert(error);
+        })
     };
 
     //add a list

@@ -27,28 +27,20 @@ const ListView = ({route, navigation}) => {
     // for managing tasks
     const [tasks, setTasks] = useState([]);
     const tasksRef = firebase.firestore().collection('tasks');
+    const completedTasksRef = firebase.firestore().collection('completedTasks');
+    const [selectedTask, setSelectedTask] = useState({});
 
     // if coming from All Tasks button,
     // set to allTasks, else set to tasks
     var useData = [];
 
     //add states for all task properties
-    const [addTaskName, setAddTaskName] = useState('');
-    const [addPriority, setAddPriority] = useState('low');
-    const [addTimeAndDate, setAddTimeAndDate] = useState('');
-    const [addTimeToComplete, setAddTimeToComplete] = useState('');
-    // const [hours, setHours] = useState('0');
+    const [taskName, setTaskName] = useState('');
+    const [priority, setPriority] = useState('low');
+    const [timeAndDate, setTimeAndDate] = useState('');
+    const [timeToComplete, setTimeToComplete] = useState('');
     const [minutes, setMinutes] = useState('0');
-    const [addBelongsTo, setAddBelongsTo] = useState(listName);
-
-    //states for editing tasks
-    const [editTaskName, setEditTaskName] = useState('');
-    const [editPriority, setEditPriority] = useState('low');
-    const [editTimeAndDate, setEditTimeAndDate] = useState('');
-    const [editTimeToComplete, setEditTimeToComplete] = useState('');
-    // const [editHours, setEditHours] = useState('');
-    const [editMinutes, setEditMinutes] = useState('');
-    // const [editBelongsTo, setEditBelongsTo] = useState(listName);
+    const [belongsTo, setBelongsTo] = useState(listName);
 
     //for +Task modal
     const [addTaskModalVisible, setAddTaskModalVisible] = useState(false);
@@ -124,6 +116,8 @@ const ListView = ({route, navigation}) => {
 
     }, []);
 
+    //if user pressed All Tasks button
+    //on home screen, render all tasks
     if(listName == 'All Tasks'){
         useData = allTasks;
     }else{
@@ -146,27 +140,26 @@ const ListView = ({route, navigation}) => {
 
     //add a task
     const addNewTask = () => {
-        if(addTaskName && addTaskName.length > 0){
+        if(taskName && taskName.length > 0){
             const timestamp = firebase.firestore.FieldValue.serverTimestamp();
             // need to edit this part
             const data = {
-                name: addTaskName,
-                priority: addPriority,
-                timeAndDate: addTimeAndDate,
-                timeToComplete: addTimeToComplete,
+                name: taskName,
+                priority: priority,
+                timeAndDate: timeAndDate,
+                timeToComplete: timeToComplete,
                 isCompleted: false,
-                belongsTo: addBelongsTo,
+                belongsTo: belongsTo,
                 dateCreated: timestamp,
             };
             tasksRef
             .add(data)
             .then(() => {
-                setAddTaskName('');
-                setAddPriority('low');
-                setAddTimeAndDate('');
-                setAddTimeToComplete('');
-                setAddBelongsTo(listName);
-                setHours('');
+                setTaskName('');
+                setPriority('low');
+                setTimeAndDate('');
+                setTimeToComplete('');
+                setBelongsTo(listName);
                 setMinutes('');
                 Keyboard.dismiss();
             })
@@ -179,54 +172,43 @@ const ListView = ({route, navigation}) => {
         setAddTaskModalVisible(!addTaskModalVisible);
     };
 
-    const openEditTaskModal = (task) => {
-        setEditTaskModalVisible(true);
-    };
-
     const updateTask = (task) => {
-        if(editTaskName && editTaskName > 0){
+        if(editTaskModalVisible){
             tasksRef
             .doc(task.id)
             .update({
-                name: editTaskName,
-                priority: editPriority,
-                timeAndDate: editTimeAndDate,
-                timeToComplete: editTimeToComplete,
+                name: taskName,
+                priority: priority,
+                timeAndDate: timeAndDate,
+                timeToComplete: timeToComplete,
                 isCompleted: task.isCompleted,
                 belongsTo: task.belongsTo,
                 dateCreated: task.dateCreated,
             }).then(() => {
                 //console.log('task updated');
-                setEditTaskName('');
-                setEditPriority('low');
-                setEditTimeAndDate('');
-                setEditTimeToComplete('');
-                setEditMinutes('');
+                setTaskName('');
+                setPriority('low');
+                setTimeAndDate('');
+                setTimeToComplete('');
+                setMinutes('');
                 Keyboard.dismiss();
             }).catch((error) => {
                 alert(error);
             })
         }
         setEditTaskModalVisible(!editTaskModalVisible);
+        setSelectedTask({});
     };
 
-    const cancelEditTaskPressed = () => {
-        setEditTaskModalVisible(!editTaskModalVisible);
-        setEditTaskName('');
-        setEditPriority('low');
-        setEditTimeAndDate('');
-        setEditTimeToComplete('');
-        setEditMinutes('');
-        setAddBelongsTo(listName);
-    };
-
-    const cancelAddTaskPressed = () => {
-        setAddTaskModalVisible(!addTaskModalVisible);
-        setAddTaskName('');
-        setAddPriority('low');
-        setAddTimeAndDate('');
-        setAddTimeToComplete('0');
-        setAddBelongsTo(listName);
+    const cancelButtonPressed = () => {
+        setAddTaskModalVisible(false);
+        setEditTaskModalVisible(false);
+        setTaskName('');
+        setPriority('low');
+        setTimeAndDate('');
+        setTimeToComplete('0');
+        setBelongsTo(listName);
+        setSelectedTask({});
     };
 
     const rightSwipeActions = (item) => {
@@ -251,7 +233,6 @@ const ListView = ({route, navigation}) => {
     };
 
     const leftSwipeActions = (item) => {
-        // console.log(item);
         return (
             <View
             style={{
@@ -266,11 +247,43 @@ const ListView = ({route, navigation}) => {
                     color='#0B3948'
                     size={30}
                     // change to open edit task modal
-                    onPress={ () => deleteTask(item) }
+                    onPress={ () => setEditTaskModalVisible(true) }
                 />
             </View>
         );
     };
+
+    const checkboxIsChecked = (item) => {
+        const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+        tasksRef
+        .doc(item.id)
+        .update({
+            isCompleted: true,
+            dateCompleted: timestamp,
+        })
+        .then(() => {
+            console.log('set isCompleted');
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+
+        completedTasksRef
+        .add(item)
+        .then(() => {
+            console.log('added to completed tasks');
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+    };
+
+    const smartSortButtonPressed = () => {
+        tasksRef
+        .orderBy('priority', 'desc')
+        .orderBy('timeAndDate', 'desc')
+        .orderBy('timeToComplete', 'desc')
+    }
 
     return(
         <View style={styles.container}>
@@ -291,6 +304,7 @@ const ListView = ({route, navigation}) => {
                         <Swipeable
                             renderRightActions={() => rightSwipeActions(item)}
                             renderLeftActions={() => leftSwipeActions(item)}
+                            onSwipeableOpen={(left) => setSelectedTask(item)}
                         >
                             <View style={[styles.task, {flexDirection: 'row',}]}>
                                 <View style={{flexDirection: 'column', borderRightWidth: 0.5, padding: 5, flex:1,}}>
@@ -339,9 +353,9 @@ const ListView = ({route, navigation}) => {
                                 <Checkbox
                                     style={{alignSelf: 'center', margin: 10,}}
                                     //change to item.isCompleted
-                                    value={isChecked}
+                                    value={item.isCompleted}
                                     //change to onChecked function, to be implemented
-                                    onValueChange={setChecked}
+                                    onValueChange={() => checkboxIsChecked(item)}
                                     color={isChecked ? 'green' : undefined}
                                 />                               
 
@@ -354,7 +368,6 @@ const ListView = ({route, navigation}) => {
             </View>   
 
             <View style={styles.buttonsContainer}>
-                {/* To do: onPress function--> bring user to all tasks (ListView) page */}
                 <TouchableOpacity 
                     style={styles.button}
                     onPress={() => setAddTaskModalVisible(true)}
@@ -386,15 +399,15 @@ const ListView = ({route, navigation}) => {
                                 style={styles.textInput}
                                 placeholder='Task Name'
                                 placeholderTextColor={'grey'}
-                                onChangeText={(name) => setAddTaskName(name)}
-                                value={addTaskName}
+                                onChangeText={(name) => setTaskName(name)}
+                                value={taskName}
                             />
 
                             <Text style={{paddingTop: 15, fontSize: 16,}}>Priority:</Text>
                             
                             <SwitchSelector 
                                 initial={0}
-                                onPress={(value) => setAddPriority(value)}
+                                onPress={(value) => setPriority(value)}
                                 selectedColor='black'
                                 borderColor='black'
                                 style={{borderWidth:0.3, borderRadius: 50, marginTop: 10,}}
@@ -416,7 +429,7 @@ const ListView = ({route, navigation}) => {
                                     date={new Date()}
                                     onConfirm={(date) => {
                                         setOpenDateTimePicker(false);
-                                        setAddTimeAndDate(date);
+                                        setTimeAndDate(date);
                                         // console.log('Date Time Picker confirm pressed');
                                         // console.log('datetime set:' + date.toString());
                                     }}
@@ -437,7 +450,7 @@ const ListView = ({route, navigation}) => {
                                  </TouchableOpacity>
                                 
                                  <Text style={{paddingTop: 15, fontSize: 16, color: '#CC7722'}}>
-                                    {addTimeAndDate
+                                    {timeAndDate
                                         .toLocaleString([], {
                                         year: 'numeric',
                                         month: 'numeric',
@@ -465,9 +478,9 @@ const ListView = ({route, navigation}) => {
                             <TouchableOpacity 
                                     style={{marginLeft: 5, marginTop: 10, padding: 10, borderWidth: 0.3, borderRadius: 5, backgroundColor: '#E5DCC5', justifyContent: 'center',}}
                                     onPress={() => {
-                                        const timeToComplete = minutes;
-                                        if(timeToComplete != ''){
-                                            setAddTimeToComplete(timeToComplete);
+                                        const ttc = minutes;
+                                        if(ttc != ''){
+                                            setTimeToComplete(ttc);
                                             // console.log('time to complete:' + timeToComplete);
                                             
                                         }else{
@@ -478,11 +491,11 @@ const ListView = ({route, navigation}) => {
                                     <Text>Confirm</Text>
                             </TouchableOpacity>
                             
-                            {addTimeToComplete != '' ? 
-                            <Text style={{paddingTop: 15, fontSize: 16, color: '#CC7722'}}>{addTimeToComplete + ' (mins)'}</Text>
+                            {timeToComplete != '' ? 
+                            <Text style={{paddingTop: 15, fontSize: 16, color: '#CC7722'}}>{timeToComplete + ' (mins)'}</Text>
                              : <View></View>}
 
-                            <TouchableOpacity onPress={() =>cancelAddTaskPressed()}>
+                            <TouchableOpacity onPress={() =>cancelButtonPressed()}>
                                 <View style={[styles.button, {marginTop: 30, backgroundColor: 'maroon', }]}>
                                     <Text style={[styles.buttonText, {fontSize: 16,}]}>Cancel</Text>
                                 </View>
@@ -497,7 +510,141 @@ const ListView = ({route, navigation}) => {
                         </View>
                     </View>
                 </Modal>
-            </View>     
+            </View>   
+
+            {/* edit task modal */}
+            <View style={styles.centeredView}>
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={editTaskModalVisible}
+                    onRequestClose={() => {
+                    Alert.alert("Modal has been closed.");
+                    setEditTaskModalVisible(false);
+                    }}
+                >
+
+                    <View style={[styles.centeredView, {marginTop: "10%",}]}>
+                        <View style={[styles.modalView, {margin: 20,}]}>
+
+                            <Text style={[styles.headerText, {color: '#0B3948'}]}>Edit Task</Text>
+                                
+                            <TextInput 
+                                style={styles.textInput}
+                                placeholder='Task Name'
+                                placeholderTextColor={'grey'}
+                                onChangeText={(name) => setTaskName(name)}
+                                value={taskName}
+                            />
+
+                            <Text style={{paddingTop: 15, fontSize: 16,}}>Priority:</Text>
+                            
+                            <SwitchSelector 
+                                initial={0}
+                                onPress={(value) => setPriority(value)}
+                                selectedColor='black'
+                                borderColor='black'
+                                style={{borderWidth:0.3, borderRadius: 50, marginTop: 10,}}
+                                backgroundColor='#E5DCC5'
+                                options={[
+                                    { label: "Low", value: "low", activeColor: 'green' }, 
+                                    { label: "Medium", value: "med", activeColor: 'yellow' }, 
+                                    { label: "High", value: "high", activeColor: 'red' }, 
+                                ]}
+                            />
+
+                            <Text style={{paddingTop: 15, fontSize: 16,}}>Deadline:</Text>
+                                                        
+                            <View>  
+                                <DateTimePickerModal 
+                                    mode='datetime'
+                                    display='default'
+                                    isVisible={openDateTimePicker}
+                                    date={new Date()}
+                                    onConfirm={(date) => {
+                                        setOpenDateTimePicker(false);
+                                        setTimeAndDate(date);
+                                        // console.log('Date Time Picker confirm pressed');
+                                        // console.log('datetime set:' + date.toString());
+                                    }}
+                                    
+                                    onCancel={() => {
+                                        setOpenDateTimePicker(false);
+                                        // console.log('Date Time Picker cancel pressed');
+                                    }}
+                                    // onConfirm={()=>{console.log('on confirm')}}
+                                    // onCancel={()=>{setOpenDateTimePicker(false); console.log('on cancel')}}
+                                />
+
+                                <TouchableOpacity 
+                                    style={{marginTop: 10, borderWidth: 0.3, padding: 10, borderRadius: 15, backgroundColor: '#E5DCC5', justifyContent: 'center', alignItems: 'center',}}
+                                    onPress={() => setOpenDateTimePicker(true)}    
+                                >
+                                    <Text>Open Date Time Picker</Text>
+                                 </TouchableOpacity>
+                                
+                                 <Text style={{paddingTop: 15, fontSize: 16, color: '#CC7722'}}>
+                                    {timeAndDate
+                                        .toLocaleString([], {
+                                        year: 'numeric',
+                                        month: 'numeric',
+                                        day: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                    })}
+                                </Text>
+                            </View>
+                            
+
+                            <Text style={{paddingTop: 15, fontSize: 16,}}>Est. time to complete task (mins):</Text>
+                            <View style={{flexDirection: 'row', justifyContent: 'center',}}>
+                                 <TextInput 
+                                    style={styles.textInput}
+                                    placeholder='0'
+                                    placeholderTextColor={'grey'}
+                                    onChangeText={(minutes) => setMinutes(minutes)}
+                                    value={minutes}
+                                    defaultValue={selectedTask.timeToComplete}
+                                />
+                                
+                            </View>
+
+                            <TouchableOpacity 
+                                    style={{marginLeft: 5, marginTop: 10, padding: 10, borderWidth: 0.3, borderRadius: 5, backgroundColor: '#E5DCC5', justifyContent: 'center',}}
+                                    onPress={() => {
+                                        const ttc = minutes;
+                                        if(ttc != ''){
+                                            setTimeToComplete(ttc);
+                                            // console.log('time to complete:' + timeToComplete);
+                                            
+                                        }else{
+                                            alert('Minutes fields cannot be empty!');
+                                        };                                   
+                                    }}    
+                                >
+                                    <Text>Confirm</Text>
+                            </TouchableOpacity>
+                            
+                            {timeToComplete != '' ? 
+                            <Text style={{paddingTop: 15, fontSize: 16, color: '#CC7722'}}>{timeToComplete + ' (mins)'}</Text>
+                             : <View></View>}
+
+                            <TouchableOpacity onPress={() =>cancelButtonPressed()}>
+                                <View style={[styles.button, {marginTop: 30, backgroundColor: 'maroon', }]}>
+                                    <Text style={[styles.buttonText, {fontSize: 16,}]}>Cancel</Text>
+                                </View>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity onPress={() => updateTask(selectedTask)}>
+                                <View style={[styles.button, {marginTop: 30}]}>
+                                    <Text style={[styles.buttonText, {fontSize: 16, paddingHorizontal: 10,}]}>Edit</Text>
+                                </View>
+                            </TouchableOpacity> 
+                            
+                        </View>
+                    </View>
+                </Modal>
+            </View>
         </View>
     )
 }
