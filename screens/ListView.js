@@ -278,13 +278,6 @@ const ListView = ({route, navigation}) => {
         });
     };
 
-    const smartSortButtonPressed = () => {
-        tasksRef
-        .orderBy('priority', 'desc')
-        .orderBy('timeAndDate', 'desc')
-        .orderBy('timeToComplete', 'desc')
-    }
-
     return(
         <View style={styles.container}>
             {/* title */}
