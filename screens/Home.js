@@ -28,7 +28,6 @@ const Home = ({navigation}) => {
     const [addPriority, setAddPriority] = useState(1);
     const [addTimeAndDate, setAddTimeAndDate] = useState('');
     const [addTimeToComplete, setAddTimeToComplete] = useState('');
-    const [hours, setHours] = useState('0');
     const [minutes, setMinutes] = useState('0');
     const [addBelongsTo, setAddBelongsTo] = useState('');
 
@@ -40,7 +39,6 @@ const Home = ({navigation}) => {
 
     //for date picker modal
     const [openDateTimePicker, setOpenDateTimePicker] = useState(false);
-    const [openTimePicker, setOpenTimePicker] = useState(false);
 
     //get data from firebase
     useEffect(() => {

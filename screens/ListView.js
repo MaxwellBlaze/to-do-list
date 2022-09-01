@@ -6,10 +6,10 @@ import  SwitchSelector  from "react-native-switch-selector";
 import SelectDropdown from 'react-native-select-dropdown';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { firebase } from '../firebase/config';
-import { useNavigation } from '@react-navigation/native';
+// import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
 
-const ListView = ({route, navigation}) => {
+const ListView = ({route}) => {
     // console.log(route);
     const listName = route.params.listName;
 

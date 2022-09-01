@@ -4,7 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Home from './screens/Home';
-import Details from './screens/Details';
+import Productivity from './screens/Productivity';
 import Settings from './screens/Settings';
 import ListView from './screens/ListView';
 
@@ -74,6 +74,38 @@ export default function App() {
             },
           }} 
           component={HomeStackScreen} />
+
+<Tab.Screen 
+          name="Productivity" 
+          options={{
+            tabBarIcon: ({focused}) => (
+              <View>
+                  <Image 
+                      source={require('./assets/icons/productivity.png')}
+                      resizeMode='contain'
+                      style={{
+                          width:30,
+                          height: 30,
+                          tintColor: focused ? '#CC7722' : 'grey',
+                          
+                      }}
+                  />
+              </View>
+
+            ),
+            title: 'Productivity',
+            headerStyle: {
+              backgroundColor: '#CC7722',
+              borderRadius: 15,
+            },
+            headerTintColor: '#0B3948',
+            headerTitleStyle: {
+              fontSize: 25,
+              fontWeight: 'bold',
+              paddingBottom: 10,
+            },
+          }} 
+          component={Productivity} />
           
         <Tab.Screen name="Settings" component={Settings} />
 
