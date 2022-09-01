@@ -17,7 +17,7 @@ const ListView = ({route}) => {
     const [isChecked, setChecked] = useState(false);
 
     //for managing lists
-    const [lists, setLists] = useState(['']);
+    // const [lists, setLists] = useState(['']);
     const listsRef = firebase.firestore().collection('lists');
     // const [listDropDown, setListDropDown] = useState([]);
     const [allTasks, setAllTasks] =useState([]);
@@ -54,20 +54,20 @@ const ListView = ({route}) => {
     //get data from firebase
     useEffect(() => {
         //for lists
-        listsRef.orderBy('dateCreated', 'asc').onSnapshot({
-            error: (e) => console.log(e),
-            next: (querySnapshot) => {
-                const lists = [];
-                querySnapshot.forEach((doc) => {
-                    const {name} = doc.data()
-                    lists.push({
-                        id: doc.id,
-                        name,
-                    })
-                })
-                setLists(lists);
-            }
-        });
+        // listsRef.orderBy('dateCreated', 'asc').onSnapshot({
+        //     error: (e) => console.log(e),
+        //     next: (querySnapshot) => {
+        //         const lists = [];
+        //         querySnapshot.forEach((doc) => {
+        //             const {name} = doc.data()
+        //             lists.push({
+        //                 id: doc.id,
+        //                 name,
+        //             })
+        //         })
+        //         setLists(lists);
+        //     }
+        // });
 
         //for tasks
         tasksRef
@@ -271,7 +271,7 @@ const ListView = ({route}) => {
             dateCompleted: timestamp,
         })
         .then(() => {
-            console.log('set isCompleted');
+            // console.log('set isCompleted');
         })
         .catch((error) => {
             console.log(error);
@@ -280,7 +280,7 @@ const ListView = ({route}) => {
         completedTasksRef
         .add(item)
         .then(() => {
-            console.log('added to completed tasks');
+            // console.log('added to completed tasks');
         })
         .catch((error) => {
             console.log(error);

@@ -8,56 +8,27 @@ import { useNavigation } from '@react-navigation/native';
 
 const Productivity = () => {
 
-    // console.log(listRef.length);
-
     // // for managing tasks
-    const [allTasks, setAllTasks] = useState([]);
+    const [allTasks, setAllTasks] = useState(0);
     const tasksRef = firebase.firestore().collection('tasks');
 
-    const [completedTasks, setCompletedTasks] = useState([]);
-    // const completedTasksRef = firebase.firestore().collection('completedTasks');
+    const [completedTasks, setCompletedTasks] = useState(0);
+    const completedTasksRef = firebase.firestore().collection('completedTasks');
+    const [completionPercentage, setCompletionPercentage] = useState(0);
 
     //get all tasks
     useEffect(() => {
-        //for all tasks
-        tasksRef.orderBy('dateCreated', 'asc').onSnapshot({
-            error: (e) => console.log(e),
-            next: (querySnapshot) => {
-                const tasks = [];
-                querySnapshot.forEach((doc) => {
-                    const {name} = doc.data()
-                    tasks.push({
-                        id: doc.id,
-                        name,
-                    })
-                })
-                setAllTasks(tasks);
-            }
+
+        tasksRef.onSnapshot(snap =>{
+            size = snap.size;
+            setAllTasks(size);
         });
-
-        // //for completed tasks
-        // completedTasksRef.orderBy('dateCreated', 'asc').onSnapshot({
-        //     error: (e) => console.log(e),
-        //     next: (querySnapshot) => {
-        //         const tasks = [];
-        //         querySnapshot.forEach((doc) => {
-        //             const {name} = doc.data()
-        //             tasks.push({
-        //                 id: doc.id,
-        //                 name,
-        //             })
-        //         })
-        //         setCompletedTasks(tasks);
-        //     }
-        // });
-
-        // console.log('All Tasks: ' + allTasks.length);
-        // console.log('Completed Tasks: ' + completedTasks.length);
+        completedTasksRef.onSnapshot(snap =>{
+            size = snap.size;
+            setCompletedTasks(size);
+        });
+        setCompletionPercentage(completedTasks/(allTasks));
     });
-
-    // const completionPercentage = ((completedTasks.length)/(allTasks.length))*100;
-
-    
 
     //chart styling 
     const chartConfig = {
@@ -66,15 +37,15 @@ const Productivity = () => {
         backgroundGradientTo: "#08130D",
         backgroundGradientToOpacity: 0.5,
         color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
-        strokeWidth: 2, // optional, default 3
+        strokeWidth: 3, // optional, default 3
         barPercentage: 0.5,
         useShadowColorFromDataset: false // optional
       };
 
       // data for chart
       const data = {
-        labels: ["Swim", "Bike", "Run"], // optional
-        data: [0.4, 0.6, 0.8]
+        labels: ["Done"], // optional
+        data: [completionPercentage]
       };
 
     return(
@@ -82,23 +53,23 @@ const Productivity = () => {
 
             {/* progress chart card */}
             <View style={styles.subContainer}>
-                <Text style={styles.headerText}>Daily</Text>
+                <Text style={styles.headerText}>Tracker</Text>
                 <View style={styles.chartContainer}>
-                    <ProgressChart
+                    {completionPercentage == 0? null : <ProgressChart
                         data={data}
-                        width={350}
+                        width={330}
                         height={220}
                         strokeWidth={16}
-                        radius={32}
+                        radius={48}
                         chartConfig={chartConfig}
                         hideLegend={false}
-                    />
+                    />}
+                    
                 </View>
                 <Text style={[styles.headerText, {fontSize: 18,}]}>Summary</Text>
-                <Text style={styles.bodyText}>Total Tasks: {allTasks.length}</Text>
-                {/* <Text style={styles.bodyText}>Completed Tasks: {completedTasks.length}</Text> */}
-                {/* <Text style={styles.bodyText}>Completion Rate: {completionPercentage}%</Text> */}
-                <Text>HELLO</Text>
+                <Text style={styles.bodyText}>Total Tasks: {allTasks}</Text>
+                <Text style={styles.bodyText}>Completed Tasks: {completedTasks}</Text>
+                <Text style={styles.bodyText}>Completion Rate: {completionPercentage.toPrecision(2)*100}%</Text>
             </View>
 
             {/* progress chart card */}
@@ -142,7 +113,7 @@ const Productivity = () => {
             </View> */}
         </ScrollView>
     )
-}
+};
 
 export default Productivity;
 

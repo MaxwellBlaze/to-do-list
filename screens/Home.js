@@ -40,9 +40,8 @@ const Home = ({navigation}) => {
     //for date picker modal
     const [openDateTimePicker, setOpenDateTimePicker] = useState(false);
 
-    //get data from firebase
-    useEffect(() => {
-        //for lists
+    //for lists
+    const getLists = async () => {
         listsRef.orderBy('dateCreated', 'asc').onSnapshot({
             error: (e) => console.log(e),
             next: (querySnapshot) => {
@@ -62,8 +61,10 @@ const Home = ({navigation}) => {
                 // console.log(listDropDown);
             }
         });
+    };
 
-        //for tasks
+    //for tasks
+    const getTasks = async () => {
         tasksRef.orderBy('dateCreated', 'asc').onSnapshot({
             error: (e) => console.log(e),
             next: (querySnapshot) => {
@@ -78,7 +79,12 @@ const Home = ({navigation}) => {
                 setTasks(tasks);
             }
         });
+    };
 
+    //get data from firebase
+    useEffect(() => {
+        getLists();
+        getTasks();
     }, []);
 
     // console.log(listDropDown);
