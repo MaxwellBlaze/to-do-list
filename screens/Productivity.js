@@ -69,7 +69,7 @@ const Productivity = () => {
                 <Text style={[styles.headerText, {fontSize: 18,}]}>Summary</Text>
                 <Text style={styles.bodyText}>Total Tasks: {allTasks}</Text>
                 <Text style={styles.bodyText}>Completed Tasks: {completedTasks}</Text>
-                <Text style={styles.bodyText}>Completion Rate: {completionPercentage.toPrecision(2)*100}%</Text>
+                <Text style={styles.bodyText}>Completion Rate: {(completionPercentage*100).toPrecision(2)}%</Text>
             </View>
 
             {/* progress chart card */}
