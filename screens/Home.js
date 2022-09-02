@@ -7,6 +7,8 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { firebase } from '../firebase/config';
 import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
+import * as Notifications from 'expo-notifications';
+import * as PushNotifications from './PushNotifications';
 
 const Home = ({navigation}) => {
 
@@ -185,7 +187,6 @@ const Home = ({navigation}) => {
                 setAddTimeAndDate('');
                 setAddTimeToComplete('');
                 setAddBelongsTo('');
-                setHours('');
                 setMinutes('');
                 Keyboard.dismiss();
             })
@@ -196,6 +197,24 @@ const Home = ({navigation}) => {
             alert('Fields cannot be empty!');
         };
         setAddTaskModalVisible(!addTaskModalVisible);
+
+        const tempDate = addTimeAndDate.toLocaleString();
+        console.log(tempDate);
+        var hour = tempDate.slice(12,14);
+        // console.log(hour);
+        var mins = tempDate.slice(15,17);
+        console.log(mins);
+        var dayDate = tempDate.slice(0,10);
+        // console.log(dayDate);
+        //index 0 - day, 1 - month, 2 - year
+        let dateArray = dayDate.split('/');
+        // console.log(dateArray);
+        
+        PushNotifications.schedulePushNotification(dateArray[2], dateArray[1], dateArray[0], hour, mins, addTaskName);
+        //setNotiDate(date);
+
+        // console.log('Date Time Picker confirm pressed');
+        // console.log('datetime set:' + date.toString());
     };
 
     const cancelAddTaskPressed = () => {
@@ -397,8 +416,6 @@ const Home = ({navigation}) => {
                                     onConfirm={(date) => {
                                         setOpenDateTimePicker(false);
                                         setAddTimeAndDate(date);
-                                        // console.log('Date Time Picker confirm pressed');
-                                        // console.log('datetime set:' + date.toString());
                                     }}
                                     
                                     onCancel={() => {
