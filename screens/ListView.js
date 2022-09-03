@@ -1,13 +1,13 @@
 import React, { useState, useEffect, } from 'react';
-import { StyleSheet, View, Text, Image, Button, FlatList, TouchableOpacity, TextInput, Keyboard, Modal, Alert, } from 'react-native';
+import { StyleSheet, View, Text, FlatList, TouchableOpacity, TextInput, Keyboard, Modal, Alert, } from 'react-native';
 import Checkbox from 'expo-checkbox';
 import { Swipeable } from 'react-native-gesture-handler';
 import  SwitchSelector  from "react-native-switch-selector";
-import SelectDropdown from 'react-native-select-dropdown';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { firebase } from '../firebase/config';
-// import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
+import * as Notifications from 'expo-notifications';
+import * as PushNotifications from './PushNotifications';
 
 const ListView = ({route}) => {
     // console.log(route);
@@ -179,6 +179,15 @@ const ListView = ({route}) => {
             alert('Fields cannot be empty!');
         };
         setAddTaskModalVisible(!addTaskModalVisible);
+
+        //for setting push notification
+        const tempDate = timeAndDate.toLocaleString();
+        var hour = tempDate.slice(12,14);
+        var mins = tempDate.slice(15,17);
+        var dayDate = tempDate.slice(0,10);       
+        //index [0] - day, [1] - month, [2] - year
+        let dateArray = dayDate.split('/');   
+        PushNotifications.schedulePushNotification(dateArray[2], dateArray[1], dateArray[0], hour, mins, taskName);
     };
 
     const updateTask = (task) => {
@@ -343,7 +352,7 @@ const ListView = ({route}) => {
 
 
                                     {/* est. time to complete */}
-                                    {item.timeToComplete != '' ? 
+                                    {!isNaN(item.timeToComplete) ? 
                                     <View style={{borderTopWidth: 0,}}>
                                         <Text style={{textAlign: 'center', padding: 5, fontSize: 15,}}>
                                             {'Est. Time to Complete: ' + item.timeToComplete + '(mins)'}

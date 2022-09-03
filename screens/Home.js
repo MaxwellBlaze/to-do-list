@@ -198,23 +198,14 @@ const Home = ({navigation}) => {
         };
         setAddTaskModalVisible(!addTaskModalVisible);
 
+        //for setting push notification
         const tempDate = addTimeAndDate.toLocaleString();
-        console.log(tempDate);
         var hour = tempDate.slice(12,14);
-        // console.log(hour);
         var mins = tempDate.slice(15,17);
-        console.log(mins);
-        var dayDate = tempDate.slice(0,10);
-        // console.log(dayDate);
-        //index 0 - day, 1 - month, 2 - year
-        let dateArray = dayDate.split('/');
-        // console.log(dateArray);
-        
+        var dayDate = tempDate.slice(0,10);       
+        //index [0] - day, [1] - month, [2] - year
+        let dateArray = dayDate.split('/');   
         PushNotifications.schedulePushNotification(dateArray[2], dateArray[1], dateArray[0], hour, mins, addTaskName);
-        //setNotiDate(date);
-
-        // console.log('Date Time Picker confirm pressed');
-        // console.log('datetime set:' + date.toString());
     };
 
     const cancelAddTaskPressed = () => {
