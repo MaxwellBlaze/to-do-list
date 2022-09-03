@@ -26,6 +26,14 @@ const ListView = ({route}) => {
     // if coming from All Tasks button,
     // set to allTasks, else set to tasks
     var useData = [];
+    
+    //if user pressed All Tasks button
+    //on home screen, render all tasks
+    if(listName == 'All Tasks'){
+        useData = allTasks;
+    }else{
+        useData = tasks;
+    };
 
     //add states for all task properties
     const [taskName, setTaskName] = useState('');
@@ -100,15 +108,7 @@ const ListView = ({route}) => {
         });
 
 
-    }, []);
-
-    //if user pressed All Tasks button
-    //on home screen, render all tasks
-    if(listName == 'All Tasks'){
-        useData = allTasks;
-    }else{
-        useData = tasks;
-    };
+    }, []);   
 
     //delete a task
     const deleteTask = (task) => {

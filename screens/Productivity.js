@@ -1,10 +1,8 @@
-import React, {useState, useEffect,} from 'react';
-import {StyleSheet, View, Text, TouchableOpacity, ScrollView} from 'react-native';
+import React, { useState, useEffect, } from 'react';
+import { View, Text, ScrollView } from 'react-native';
 import { firebase } from '../firebase/config';
-import { BarChart, ProgressChart, StackedBarChart } from 'react-native-chart-kit';
-import {} from 'react-native-svg';
-import { useNavigation } from '@react-navigation/native';
-
+import { ProgressChart } from 'react-native-chart-kit';
+import styles from '../styles/ProductivityStyles';
 
 const Productivity = () => {
 
@@ -48,11 +46,11 @@ const Productivity = () => {
       };
 
     return(
-        <ScrollView style={styles.container}> 
+        <View style={styles.container}> 
 
             {/* progress chart card */}
             <View style={styles.subContainer}>
-                <Text style={styles.headerText}>Tracker</Text>
+                <Text style={styles.headerText}>Completed Tasks</Text>
                 <View style={styles.chartContainer}>
                     {completionPercentage == 0? null : <ProgressChart
                         data={data}
@@ -70,48 +68,46 @@ const Productivity = () => {
                 <Text style={styles.bodyText}>Completed Tasks: {completedTasks}</Text>
                 <Text style={styles.bodyText}>Completion Rate: {(completionPercentage*100).toPrecision(2)}%</Text>
             </View>
-        </ScrollView>
+        </View>
     )
 };
 
 export default Productivity;
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#E5DCC5',
-        borderRadius: 15,
-    },
-    subContainer: {
-        backgroundColor: '#0B3948',
-        justifyContent: 'center',
-        alignItems: 'center',
-        alignSelf: 'center',
-        borderWidth: 1,
-        borderRadius: 15,
-        marginTop: 15,
-        width: '90%',
+// const styles = StyleSheet.create({
+//     container: {
+//         flex: 1,
+//         backgroundColor: '#E5DCC5',
+//         borderRadius: 15,
+//     },
+//     subContainer: {
+//         backgroundColor: '#0B3948',
+//         justifyContent: 'center',
+//         alignItems: 'center',
+//         alignSelf: 'center',
+//         borderWidth: 1,
+//         borderRadius: 15,
+//         marginTop: 15,
+//         width: '90%',
         
-    },
-    headerText: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        padding: 5,
-        color: '#CC7722',
+//     },
+//     headerText: {
+//         fontSize: 20,
+//         fontWeight: 'bold',
+//         textAlign: 'center',
+//         padding: 5,
+//         color: '#CC7722',
 
-    },
-    chartContainer: {
-        marginBottom: 10,
-        marginHorizontal: 5,
-    },
-    bodyText: {
-        fontSize: 16,
-        fontWeight: '400',
-        textAlign: 'center',
-        padding: 5,
-        color: '#CC7722',
-    },
-
-
-});
+//     },
+//     chartContainer: {
+//         marginBottom: 10,
+//         marginHorizontal: 5,
+//     },
+//     bodyText: {
+//         fontSize: 16,
+//         fontWeight: '400',
+//         textAlign: 'center',
+//         padding: 5,
+//         color: '#CC7722',
+//     },
+// });

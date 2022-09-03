@@ -22,22 +22,22 @@ const CompletedTasks = () => {
                         name: doc.data().name,
                         priority: doc.data().priority,
                         timeAndDate: doc.data().timeAndDate,
-                        timeToComplete: parseInt(doc.data().timeToComplete),
-                        isCompleted: doc.data().isCompleted,
-                        belongsTo: doc.data().belongsTo,
-                        dateCreated: doc.data().dateCreated,
+                        timeToComplete: doc.data().timeToComplete,
+                        // isCompleted: doc.data().isCompleted,
+                        // belongsTo: doc.data().belongsTo,
+                        // dateCreated: doc.data().dateCreated,
                     })
                 })
                 setTasks(tasks);
                 // console.log(tasks)
             }
         });
-    });
+    }, []);
 
     return(
         <View style={styles.container}>
             {/* Flatlist of tasklists */}
-            <View style={styles.bodyContainer}>
+            <View style={[styles.bodyContainer, {flex: 1}]}>
                 <FlatList
                     data={tasks}
                     numColumns={1}
