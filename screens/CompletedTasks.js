@@ -1,10 +1,9 @@
 import React, {useState, useEffect,} from 'react';
-import {StyleSheet, View, Text, Image, FlatList} from 'react-native';
+import { View, Text, FlatList } from 'react-native';
 import { firebase } from '../firebase/config';
 import styles from '../styles/ListViewStyles';
 
 const CompletedTasks = () => {
-
     const completedTasksRef = firebase.firestore().collection('tasks').where('isCompleted', '==', true);
     const [tasks, setTasks] = useState([]);
     
