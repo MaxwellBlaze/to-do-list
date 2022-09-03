@@ -21,7 +21,6 @@ const ListView = ({route}) => {
     // for managing tasks
     const [tasks, setTasks] = useState([]);
     const tasksRef = firebase.firestore().collection('tasks');
-    // const completedTasksRef = firebase.firestore().collection('tasks').where('isCompleted', '==', 'true');
     const [selectedTask, setSelectedTask] = useState({});
 
     // if coming from All Tasks button,
@@ -272,15 +271,6 @@ const ListView = ({route}) => {
         .catch((error) => {
             console.log(error);
         });
-
-        // completedTasksRef
-        // .add(item)
-        // .then(() => {
-        //     // console.log('added to completed tasks');
-        // })
-        // .catch((error) => {
-        //     console.log(error);
-        // });
     };
 
     return(
@@ -304,7 +294,7 @@ const ListView = ({route}) => {
                             renderLeftActions={() => leftSwipeActions(item)}
                             onSwipeableOpen={(left) => setSelectedTask(item)}
                         >
-                            <View style={[styles.task, {flexDirection: 'row',}]}>
+                            {!item.isCompleted? <View style={[styles.task, {flexDirection: 'row',}]}>
                                 <View style={{flexDirection: 'column', borderRightWidth: 0.5, padding: 5, flex:1,}}>
                                     {/* task name */}
                                     <Text style={{textAlign: 'center', padding: 1, fontSize: 18, fontWeight: 'bold', borderBottomWidth: 1,}}>
@@ -329,7 +319,6 @@ const ListView = ({route}) => {
                                         </Text> 
                                     </View> }
 
-
                                     {/* est. time to complete */}
                                     {!isNaN(item.timeToComplete) ? 
                                     <View style={{borderTopWidth: 0,}}>
@@ -337,8 +326,6 @@ const ListView = ({route}) => {
                                             {'Est. Time to Complete: ' + item.timeToComplete + '(mins)'}
                                         </Text> 
                                     </View> : <View></View>}
-
-                                    
 
                                     {/* deadline */}
                                     {item.timeAndDate != '' ? 
@@ -357,9 +344,8 @@ const ListView = ({route}) => {
                                     color={isChecked ? 'green' : undefined}
                                 />                               
 
-                            </View>
-                            
-                            
+                            </View> : null}
+                                                                              
                         </Swipeable> 
                     )}
                 />
