@@ -5,7 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Home from './screens/Home';
 import Productivity from './screens/Productivity';
-import Settings from './screens/Settings';
+import CompletedTasks from './screens/CompletedTasks';
 import ListView from './screens/ListView';
 
 //create a navi stack for the
@@ -75,7 +75,40 @@ export default function App() {
           }} 
           component={HomeStackScreen} />
 
-<Tab.Screen 
+        <Tab.Screen 
+          name="CompletedTasks" 
+          options={{
+            tabBarIcon: ({focused}) => (
+              <View>
+                  <Image 
+                      source={require('./assets/icons/check.png')}
+                      resizeMode='contain'
+                      style={{
+                          width:30,
+                          height: 30,
+                          tintColor: focused ? '#CC7722' : 'grey',
+                          
+                      }}
+                  />
+              </View>
+
+            ),
+            title: 'Completed Tasks',
+            headerStyle: {
+              backgroundColor: '#CC7722',
+              borderRadius: 15,
+            },
+            headerTintColor: '#0B3948',
+            headerTitleStyle: {
+              fontSize: 25,
+              fontWeight: 'bold',
+              paddingBottom: 10,
+            },
+          }} 
+          component={CompletedTasks} 
+        />
+
+        <Tab.Screen 
           name="Productivity" 
           options={{
             tabBarIcon: ({focused}) => (
@@ -105,9 +138,8 @@ export default function App() {
               paddingBottom: 10,
             },
           }} 
-          component={Productivity} />
-          
-        <Tab.Screen name="Settings" component={Settings} />
+          component={Productivity} 
+        />
 
       </Tab.Navigator>
     </NavigationContainer>
