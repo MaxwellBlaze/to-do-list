@@ -71,6 +71,46 @@ const Productivity = () => {
                 <Text style={styles.bodyText}>Completed Tasks: {completedTasks}</Text>
                 <Text style={styles.bodyText}>Completion Rate: {(completionPercentage*100).toPrecision(2)}%</Text>
             </View>
+
+            {/* progress chart card */}
+            {/* <View style={styles.subContainer}>
+                <Text style={styles.headerText}>Weekly</Text>
+                <View style={styles.chartContainer}>
+                    <ProgressChart
+                        data={data}
+                        width={350}
+                        height={220}
+                        strokeWidth={16}
+                        radius={32}
+                        chartConfig={chartConfig}
+                        hideLegend={false}
+                    />
+                </View>
+                <Text style={[styles.headerText, {fontSize: 18,}]}>Summary</Text>
+                <Text style={styles.bodyText}>Total Tasks: 50</Text>
+                <Text style={styles.bodyText}>Completed Tasks: 50</Text>
+                <Text style={styles.bodyText}>Completion Rate: 100%</Text>
+            </View> */}
+
+          {/* progress chart card */}
+          {/* <View style={styles.subContainer}>
+                <Text style={styles.headerText}>Monthly</Text>
+                <View style={styles.chartContainer}>
+                    <ProgressChart
+                        data={data}
+                        width={350}
+                        height={220}
+                        strokeWidth={16}
+                        radius={32}
+                        chartConfig={chartConfig}
+                        hideLegend={false}
+                    />
+                </View>
+                <Text style={[styles.headerText, {fontSize: 18,}]}>Summary</Text>
+                <Text style={styles.bodyText}>Total Tasks: 100</Text>
+                <Text style={styles.bodyText}>Completed Tasks: 100</Text>
+                <Text style={styles.bodyText}>Completion Rate: 100%</Text>
+            </View> */}
         </ScrollView>
     )
 };
