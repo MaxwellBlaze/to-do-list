@@ -189,17 +189,21 @@ const Home = ({navigation}) => {
         setAddTaskModalVisible(!addTaskModalVisible);
 
         //for setting push notification
-        const tempDate = addTimeAndDate.toLocaleString('en-GB');
-        // console.log(tempDate);
-        var hour = tempDate.slice(11,14);
-        // console.log(hour);
-        var mins = tempDate.slice(15,17);
-        // console.log(mins);
-        var dayDate = tempDate.slice(0,10);
-        // console.log(dayDate);       
-        //index [0] - day, [1] - month, [2] - year
-        let dateArray = dayDate.split('/');   
-        PushNotifications.schedulePushNotification(dateArray[2], dateArray[1], dateArray[0], hour, mins, addTaskName);
+        if(addTimeAndDate != ''){
+            const tempDate = addTimeAndDate.toLocaleString('en-GB');
+            // console.log(tempDate);
+            var hour = tempDate.slice(11,14);
+            // console.log(hour);
+            var mins = tempDate.slice(15,17);
+            // console.log(mins);
+            var dayDate = tempDate.slice(0,10);
+            // console.log(dayDate);       
+            //index [0] - day, [1] - month, [2] - year
+            let dateArray = dayDate.split('/');   
+            PushNotifications.schedulePushNotification(dateArray[2], dateArray[1], dateArray[0], hour, mins, addTaskName);
+        }else{
+            console.log('Notification not set.');
+        };  
     };
 
     const cancelAddTaskPressed = () => {

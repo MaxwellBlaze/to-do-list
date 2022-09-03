@@ -158,18 +158,23 @@ const ListView = ({route}) => {
         };
         setAddTaskModalVisible(!addTaskModalVisible);
 
-        //for setting push notification
-        const tempDate = timeAndDate.toLocaleString('en-GB');
-        // console.log(tempDate);
-        var hour = tempDate.slice(11,14);
-        // console.log(hour);
-        var mins = tempDate.slice(15,17);
-        // console.log(mins);
-        var dayDate = tempDate.slice(0,10);
-        // console.log(dayDate);       
-        //index [0] - day, [1] - month, [2] - year
-        let dateArray = dayDate.split('/');   
-        PushNotifications.schedulePushNotification(dateArray[2], dateArray[1], dateArray[0], hour, mins, taskName);
+        if(timeAndDate != ''){
+             //for setting push notification
+            const tempDate = timeAndDate.toLocaleString('en-GB');
+            // console.log(tempDate);
+            var hour = tempDate.slice(11,14);
+            // console.log(hour);
+            var mins = tempDate.slice(15,17);
+            // console.log(mins);
+            var dayDate = tempDate.slice(0,10);
+            // console.log(dayDate);       
+            //index [0] - day, [1] - month, [2] - year
+            let dateArray = dayDate.split('/');   
+            PushNotifications.schedulePushNotification(dateArray[2], dateArray[1], dateArray[0], hour, mins, taskName);
+        }else{
+            console.log('Notification not set.');
+        };
+       
     };
 
     const updateTask = (task) => {
@@ -277,14 +282,6 @@ const ListView = ({route}) => {
             console.log(error);
         });
     };
-
-    // const smartSortButtonPressed = () => {
-    //     tasksRef
-    //     .where('belongsTo', '==', listName)
-    //     .orderBy('priority', 'desc')
-    //     .orderBy('timeAndDate', 'desc')
-    //     .orderBy('timeToComplete', 'desc')
-    // };
 
     return(
         <View style={styles.container}>
