@@ -199,10 +199,14 @@ const Home = ({navigation}) => {
         setAddTaskModalVisible(!addTaskModalVisible);
 
         //for setting push notification
-        const tempDate = addTimeAndDate.toLocaleString();
-        var hour = tempDate.slice(12,14);
+        const tempDate = addTimeAndDate.toLocaleString('en-GB');
+        // console.log(tempDate);
+        var hour = tempDate.slice(11,14);
+        // console.log(hour);
         var mins = tempDate.slice(15,17);
-        var dayDate = tempDate.slice(0,10);       
+        // console.log(mins);
+        var dayDate = tempDate.slice(0,10);
+        // console.log(dayDate);       
         //index [0] - day, [1] - month, [2] - year
         let dateArray = dayDate.split('/');   
         PushNotifications.schedulePushNotification(dateArray[2], dateArray[1], dateArray[0], hour, mins, addTaskName);
@@ -240,22 +244,13 @@ const Home = ({navigation}) => {
 
     return(
         
-        <View style={styles.container}>
-            {/* title */}
-            {/* <View style={styles.headerContainer}>
-                <Text style={styles.headerText}>
-                    Lists
-                </Text>
-            </View> */}
-            
+        <View style={styles.container}>           
             {/* Flatlist of tasklists */}
             <View style={styles.bodyContainer}>
-
                 <FlatList 
                     data={lists}
                     numColumns={1}
                     renderItem={({item}) => (
-                        
                         <Swipeable
                             renderRightActions={() => rightSwipeActions(item)}
                         >
@@ -275,7 +270,6 @@ const Home = ({navigation}) => {
                         </Swipeable> 
                     )}
                 />
-
             </View>
 
             <View style={styles.buttonsContainer}>
@@ -287,8 +281,6 @@ const Home = ({navigation}) => {
                         + List
                     </Text>
                 </TouchableOpacity>
-
-                {/* To do: onPress function--> bring user to all tasks (ListView) page */}
                 <TouchableOpacity 
                     style={styles.button}
                     onPress={() => {navigation.navigate('ListView', 
@@ -296,14 +288,11 @@ const Home = ({navigation}) => {
                                             listName: 'All Tasks',
                                         }
                                     )}}
-                >
-                
+                >                
                     <Text style={styles.buttonText}>
                         All Tasks
                     </Text>
                 </TouchableOpacity>
-
-                {/* To do: onPress function--> bring user to task creation page */}
                 <TouchableOpacity 
                     style={[styles.button, {borderTopRightRadius: 15, borderBottomRightRadius: 15,}]}
                     onPress={() => setAddTaskModalVisible(true)}
@@ -325,10 +314,8 @@ const Home = ({navigation}) => {
                     setAddListModalVisible(!addListModalVisible);
                     }}
                 >
-
                     <View style={styles.centeredView}>
                         <View style={styles.modalView}>
-
                             <Text style={styles.headerText}>Add A List</Text>
                             <TextInput 
                                 style={styles.textInput}
@@ -337,19 +324,16 @@ const Home = ({navigation}) => {
                                 onChangeText={(name) => setAddList(name)}
                                 value={addList}
                             />
-
                             <TouchableOpacity onPress={() => setAddListModalVisible(!addListModalVisible)}>
                                 <View style={[styles.button, {marginTop: 30, backgroundColor: 'maroon', }]}>
                                     <Text style={[styles.buttonText, {fontSize: 16,}]}>Cancel</Text>
                                 </View>
                             </TouchableOpacity>
-
                             <TouchableOpacity onPress={() => addNewList()}>
                                 <View style={[styles.button, {marginTop: 30,}]}>
                                     <Text style={[styles.buttonText, {fontSize: 16,}]}>Create</Text>
                                 </View>
-                            </TouchableOpacity> 
-                            
+                            </TouchableOpacity>                            
                         </View>
                     </View>
                 </Modal>
@@ -366,12 +350,9 @@ const Home = ({navigation}) => {
                     setAddTaskModalVisible(!addTaskModalVisible);
                     }}
                 >
-
                     <View style={[styles.centeredView, {marginTop: "10%",}]}>
                         <View style={[styles.modalView, {margin: 20,}]}>
-
-                            <Text style={styles.headerText}>Add A Task</Text>
-                                
+                            <Text style={styles.headerText}>Add A Task</Text>         
                             <TextInput 
                                 style={styles.textInput}
                                 placeholder='Task Name'
@@ -379,9 +360,7 @@ const Home = ({navigation}) => {
                                 onChangeText={(name) => setAddTaskName(name)}
                                 value={addTaskName}
                             />
-
-                            <Text style={{paddingTop: 15, fontSize: 16,}}>Priority:</Text>
-                            
+                            <Text style={{paddingTop: 15, fontSize: 16,}}>Priority:</Text>                           
                             <SwitchSelector 
                                 initial={0}
                                 onPress={(value) => setAddPriority(value)}
@@ -395,9 +374,7 @@ const Home = ({navigation}) => {
                                     { label: "High", value: 3, activeColor: 'red' }, 
                                 ]}
                             />
-
-                            <Text style={{paddingTop: 15, fontSize: 16,}}>Deadline:</Text>
-                                                        
+                            <Text style={{paddingTop: 15, fontSize: 16,}}>Deadline:</Text>                                                        
                             <View>  
                                 <DateTimePickerModal 
                                     mode='datetime'
@@ -408,22 +385,17 @@ const Home = ({navigation}) => {
                                         setOpenDateTimePicker(false);
                                         setAddTimeAndDate(date);
                                     }}
-                                    
                                     onCancel={() => {
                                         setOpenDateTimePicker(false);
                                         // console.log('Date Time Picker cancel pressed');
                                     }}
-                                    // onConfirm={()=>{console.log('on confirm')}}
-                                    // onCancel={()=>{setOpenDateTimePicker(false); console.log('on cancel')}}
                                 />
-
                                 <TouchableOpacity 
                                     style={{marginTop: 10, borderWidth: 0.3, padding: 10, borderRadius: 15, backgroundColor: '#E5DCC5', justifyContent: 'center', alignItems: 'center',}}
                                     onPress={() => setOpenDateTimePicker(true)}    
                                 >
                                     <Text>Open Date Time Picker</Text>
-                                 </TouchableOpacity>
-                                
+                                 </TouchableOpacity>                                
                                  <Text style={{paddingTop: 15, fontSize: 16, color: '#CC7722'}}>
                                     {addTimeAndDate
                                         .toLocaleString([], {
@@ -434,9 +406,7 @@ const Home = ({navigation}) => {
                                         minute: '2-digit',
                                     })}
                                 </Text>
-                            </View>
-                            
-
+                            </View>                          
                             <Text style={{paddingTop: 15, fontSize: 16,}}>Est time to complete task (mins):</Text>
                             <View style={{flexDirection: 'row', justifyContent: 'center',}}>
                                  <TextInput 
@@ -446,10 +416,8 @@ const Home = ({navigation}) => {
                                     onChangeText={(minutes) => setMinutes(minutes)}
                                     value={minutes}
                                     defaultValue='0'
-                                />
-                                
+                                />                               
                             </View>
-
                             <TouchableOpacity 
                                     style={{marginLeft: 5, marginTop: 10, padding: 10, borderWidth: 0.3, borderRadius: 5, backgroundColor: '#E5DCC5', justifyContent: 'center',}}
                                     onPress={() => {
@@ -464,27 +432,23 @@ const Home = ({navigation}) => {
                                     }}    
                                 >
                                     <Text>Confirm</Text>
-                            </TouchableOpacity>
-                            
+                            </TouchableOpacity> 
+
                             {addTimeToComplete != '' ? 
                             <Text style={{paddingTop: 15, fontSize: 16, color: '#CC7722'}}>{addTimeToComplete + ' (mins)'}</Text>
                              : <View></View>}
-
                             <Text style={{paddingTop: 15, fontSize: 16, marginBottom: 5,}}>Add to a List:</Text>
                             <SelectDropdown 
                                 data={listDropDown}
-                                onSelect={(selectedItem, index) => {
+                                onSelect={(selectedItem) => {
                                     setAddBelongsTo(selectedItem);
-                                    // console.log(selectedItem, index);
                                   }}
                                 buttonTextStyle={{fontSize: 15,}}
                                 renderDropdownIcon={isOpened => {
                                 return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'} color={'#444'} size={18} />;
                                 }}
                                 dropdownIconPosition={'right'}
-
                             />
-
 
                             <TouchableOpacity onPress={() =>cancelAddTaskPressed()}>
                                 <View style={[styles.button, {marginTop: 30, backgroundColor: 'maroon', }]}>
@@ -502,12 +466,6 @@ const Home = ({navigation}) => {
                     </View>
                 </Modal>
             </View>
-
-            {/* <Button
-                title="Go to Details"
-                onPress={() => navigation.navigate('Details')}
-            /> */}
-
             </View>
     )
 }
@@ -517,22 +475,15 @@ export default Home;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        //flexDirection: 'column',
         backgroundColor: '#E5DCC5',
         borderRadius: 15,
-        // padding: 15,
     },
     headerContainer: {
-        //flexDirection: 'row',
         justifyContent: 'center',
-        // backgroundColor: '#CC7722',
         marginTop: '10%',
         marginBottom: 10,
         paddingVertical: '3%',
-        // borderRadius: 10,
         borderBottomWidth: 1,
-        // borderLeftWidth: 1,
-        // borderRightWidth: 1,
     },
     headerText: {
         fontSize: 25,
@@ -542,8 +493,7 @@ const styles = StyleSheet.create({
     },
     bodyContainer: {
         justifyContent: 'center',
-        // alignItems: 'center',
-        // alignContent: 'center',
+        height: '80%',
 
     },
     buttonContainer: {
@@ -556,7 +506,7 @@ const styles = StyleSheet.create({
         paddingTop: 30,
         justifyContent: 'space-between',
         position: 'absolute',
-        bottom: 50,
+        bottom: 10,
         left: 10,
         right: 10,
     },
@@ -576,15 +526,11 @@ const styles = StyleSheet.create({
         color: 'white',
     },
     centeredView: {
-        // flex: 1,
         justifyContent: "center",
         alignItems: "center",
         marginTop: '50%',
       },
       modalView: {
-        // flexDirection: 'column',
-        // height: 400,
-        // width: 250,
         borderWidth: 0.3,
         margin: 20,
         backgroundColor: "white",
@@ -593,7 +539,6 @@ const styles = StyleSheet.create({
         alignItems: "center",
       },
       textInput: {
-        // marginHorizontal: 30,
         marginTop: 20,
         padding: 15,
         borderWidth: 1,

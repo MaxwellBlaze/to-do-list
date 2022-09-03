@@ -53,22 +53,6 @@ const ListView = ({route}) => {
 
     //get data from firebase
     useEffect(() => {
-        //for lists
-        // listsRef.orderBy('dateCreated', 'asc').onSnapshot({
-        //     error: (e) => console.log(e),
-        //     next: (querySnapshot) => {
-        //         const lists = [];
-        //         querySnapshot.forEach((doc) => {
-        //             const {name} = doc.data()
-        //             lists.push({
-        //                 id: doc.id,
-        //                 name,
-        //             })
-        //         })
-        //         setLists(lists);
-        //     }
-        // });
-
         //for tasks
         tasksRef
         .where('belongsTo', '==', listName)
@@ -181,10 +165,14 @@ const ListView = ({route}) => {
         setAddTaskModalVisible(!addTaskModalVisible);
 
         //for setting push notification
-        const tempDate = timeAndDate.toLocaleString();
-        var hour = tempDate.slice(12,14);
+        const tempDate = timeAndDate.toLocaleString('en-GB');
+        // console.log(tempDate);
+        var hour = tempDate.slice(11,14);
+        // console.log(hour);
         var mins = tempDate.slice(15,17);
-        var dayDate = tempDate.slice(0,10);       
+        // console.log(mins);
+        var dayDate = tempDate.slice(0,10);
+        // console.log(dayDate);       
         //index [0] - day, [1] - month, [2] - year
         let dateArray = dayDate.split('/');   
         PushNotifications.schedulePushNotification(dateArray[2], dateArray[1], dateArray[0], hour, mins, taskName);
@@ -457,8 +445,6 @@ const ListView = ({route}) => {
                                         setOpenDateTimePicker(false);
                                         // console.log('Date Time Picker cancel pressed');
                                     }}
-                                    // onConfirm={()=>{console.log('on confirm')}}
-                                    // onCancel={()=>{setOpenDateTimePicker(false); console.log('on cancel')}}
                                 />
 
                                 <TouchableOpacity 
@@ -673,26 +659,18 @@ export default ListView;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        //flexDirection: 'column',
         backgroundColor: '#E5DCC5',
         borderRadius: 15,
         marginTop: 10,
-        // padding: 15,
     },
     headerContainer: {
-        //flexDirection: 'row',
         justifyContent: 'center',
         backgroundColor: '#0B3948',
-        // marginTop: 10,
         marginBottom: 10,
         paddingVertical: '3%',
         borderTopLeftRadius: 10,
         borderTopRightRadius: 10,
-        // borderTopWidth: 0.3,
         borderBottomWidth: 1,
-        // borderLeftWidth: 0.3,
-        // borderRightWidth: 0.3,
-        // borderWidth: 0.3,#CC7722
     },
     headerText: {
         fontSize: 20,
@@ -702,9 +680,7 @@ const styles = StyleSheet.create({
     },
     bodyContainer: {
         justifyContent: 'center',
-        // alignItems: 'center',
-        // alignContent: 'center',
-
+        height: '80%',
     },
     buttonContainer: {
         alignItems: 'center',
@@ -716,7 +692,7 @@ const styles = StyleSheet.create({
         paddingTop: 30,
         justifyContent: 'center',
         position: 'absolute',
-        bottom: 50,
+        bottom: 10,
         left: 10,
         right: 10,
     },
@@ -736,15 +712,11 @@ const styles = StyleSheet.create({
         color: 'white',
     },
     centeredView: {
-        // flex: 1,
         justifyContent: "center",
         alignItems: "center",
         marginTop: '50%',
       },
       modalView: {
-        // flexDirection: 'column',
-        // height: 400,
-        // width: 250,
         borderWidth: 0.3,
         margin: 20,
         backgroundColor: "white",
@@ -753,7 +725,6 @@ const styles = StyleSheet.create({
         alignItems: "center",
       },
       textInput: {
-        // marginHorizontal: 30,
         marginTop: 20,
         padding: 15,
         borderWidth: 1,
@@ -763,11 +734,7 @@ const styles = StyleSheet.create({
       task: {
         borderWidth: 0.3, 
         margin:5,
-        // padding: 5,
         borderRadius: 10,
         backgroundColor: 'white',
-
       },
-
-
 });

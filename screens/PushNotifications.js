@@ -58,11 +58,11 @@ export default function App() {
 }
 
 export async function schedulePushNotification(year, month, day, hour, mins, taskName) {
-    // console.log('hour: ' + hour);
-    // console.log('mins: ' + mins);
-    // console.log('year: ' + year);
-    // console.log('month: ' + month);
-    // console.log('day: ' + day);
+    console.log('hour: ' + hour);
+    console.log('mins: ' + mins);
+    console.log('year: ' + year);
+    console.log('month: ' + month);
+    console.log('day: ' + day);
 
     await Notifications.scheduleNotificationAsync({
     content: {
