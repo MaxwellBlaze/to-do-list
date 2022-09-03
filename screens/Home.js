@@ -19,7 +19,7 @@ const Home = ({navigation}) => {
     // for managing tasks
     const [tasks, setTasks] = useState([]);
     const tasksRef = firebase.firestore().collection('tasks');
-    const [deleteTasks, setDeleteTasks] = useState([]);
+    // const [deleteTasks, setDeleteTasks] = useState([]);
 
     //add states for all task properties
     const [addTaskName, setAddTaskName] = useState('');
@@ -99,24 +99,17 @@ const Home = ({navigation}) => {
 
     //delete a list
     const deleteList = (list) => {
-
-        //get tasks belonging to deleted list
-        tasksRef.where('belongsTo', '==', list.name).orderBy('dateCreated', 'asc').onSnapshot({
+        //delete tasks belonging to list
+        const deleteTasks = firebase.firestore().collection('tasks').where('belongsTo', '==', list.name);    
+        deleteTasks.onSnapshot({
             error: (e) => console.log(e),
             next: (querySnapshot) => {
-                const tasks = [];
+                const batch = firebase.firestore().batch();
                 querySnapshot.forEach((doc) => {
-                    tasks.push({
-                        id: doc.id,
-                    })
-                })
-                setDeleteTasks(tasks);
+                    batch.delete(doc.ref);
+                });
+                batch.commit();
             }
-        });
-
-        //delete the tasks belonging to the list
-        deleteTasks.forEach((doc) => {
-            deleteTask(doc);
         });
 
         //delete the list
