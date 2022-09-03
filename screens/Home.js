@@ -1,24 +1,20 @@
 import React, { useState, useEffect, } from 'react';
-import { StyleSheet, View, Text, Image, Button, FlatList, TouchableOpacity, TextInput, Keyboard, Modal, Alert, Picker } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, TextInput, Keyboard, Modal, Alert, } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 import  SwitchSelector  from "react-native-switch-selector";
 import SelectDropdown from 'react-native-select-dropdown';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { firebase } from '../firebase/config';
-import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
-import * as Notifications from 'expo-notifications';
 import * as PushNotifications from './PushNotifications';
+import styles from '../styles/HomeStyles';
 
 const Home = ({navigation}) => {
-
     //for managing lists
     const [lists, setLists] = useState(['']);
     const listsRef = firebase.firestore().collection('lists');
     const [addList, setAddList] = useState([]);
     const [listDropDown, setListDropDown] = useState([]);
-    //add a state for selected list
-    const [selectedList, setSelectedList] = useState();
 
     // for managing tasks
     const [tasks, setTasks] = useState([]);
@@ -35,14 +31,12 @@ const Home = ({navigation}) => {
 
     //for +List modal
     const [addListModalVisible, setAddListModalVisible] = useState(false);
-
     //for +Task modal
     const [addTaskModalVisible, setAddTaskModalVisible] = useState(false);
-
     //for date picker modal
     const [openDateTimePicker, setOpenDateTimePicker] = useState(false);
 
-    //for lists
+    //getting lists from firebase
     const getLists = async () => {
         listsRef.orderBy('dateCreated', 'asc').onSnapshot({
             error: (e) => console.log(e),
@@ -65,7 +59,7 @@ const Home = ({navigation}) => {
         });
     };
 
-    //for tasks
+    //getting tasks from firebase
     const getTasks = async () => {
         tasksRef.orderBy('dateCreated', 'asc').onSnapshot({
             error: (e) => console.log(e),
@@ -88,8 +82,6 @@ const Home = ({navigation}) => {
         getLists();
         getTasks();
     }, []);
-
-    // console.log(listDropDown);
     
     //function to delete a task
     const deleteTask = (task) => {
@@ -118,9 +110,7 @@ const Home = ({navigation}) => {
                         id: doc.id,
                     })
                 })
-                console.log(tasks);
                 setDeleteTasks(tasks);
-                // console.log(tasks)
             }
         });
 
@@ -471,88 +461,3 @@ const Home = ({navigation}) => {
 }
 
 export default Home;
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#E5DCC5',
-        borderRadius: 15,
-    },
-    headerContainer: {
-        justifyContent: 'center',
-        marginTop: '10%',
-        marginBottom: 10,
-        paddingVertical: '3%',
-        borderBottomWidth: 1,
-    },
-    headerText: {
-        fontSize: 25,
-        fontWeight: 'bold',
-        color: '#0B3948',
-        textAlign: 'center',
-    },
-    bodyContainer: {
-        justifyContent: 'center',
-        height: '80%',
-
-    },
-    buttonContainer: {
-        alignItems: 'center',
-        paddingTop: 30,
-    },
-    buttonsContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingTop: 30,
-        justifyContent: 'space-between',
-        position: 'absolute',
-        bottom: 10,
-        left: 10,
-        right: 10,
-    },
-    button: {
-        borderRadius: 5, 
-        backgroundColor: '#0B3948',
-        borderWidth: 1,
-        borderColor: '#706a5d',
-        textAlign: 'center',
-        width: '30%',
-        padding: 10,
-    },
-    buttonText: {
-        textAlign: 'center',
-        fontSize: 18,
-        fontWeight: '600',
-        color: 'white',
-    },
-    centeredView: {
-        justifyContent: "center",
-        alignItems: "center",
-        marginTop: '50%',
-      },
-      modalView: {
-        borderWidth: 0.3,
-        margin: 20,
-        backgroundColor: "white",
-        borderRadius: 20,
-        padding: 35,
-        alignItems: "center",
-      },
-      textInput: {
-        marginTop: 20,
-        padding: 15,
-        borderWidth: 1,
-        borderRadius: 5,
-        borderColor: '#706a5d',
-      },
-      list: {
-        borderWidth: 0.3, 
-        margin:10,
-        padding: 5,
-        borderRadius: 10,
-        backgroundColor: 'white',
-
-      },
-
-
-});

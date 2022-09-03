@@ -114,19 +114,3 @@ export default function App() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    // alignItems: 'center',
-    // position: 'relative',
-    // top: 10,
-    
-  },
-  imageContainer: {
-      // flex: 1,
-      //backgroundColor: 'black',
-  },
-  textContainer: {
-      //flex:1,
-  },
-
-})
