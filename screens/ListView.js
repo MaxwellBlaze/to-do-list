@@ -21,7 +21,7 @@ const ListView = ({route}) => {
     // for managing tasks
     const [tasks, setTasks] = useState([]);
     const tasksRef = firebase.firestore().collection('tasks');
-    const completedTasksRef = firebase.firestore().collection('completedTasks');
+    // const completedTasksRef = firebase.firestore().collection('tasks').where('isCompleted', '==', 'true');
     const [selectedTask, setSelectedTask] = useState({});
 
     // if coming from All Tasks button,
@@ -273,14 +273,14 @@ const ListView = ({route}) => {
             console.log(error);
         });
 
-        completedTasksRef
-        .add(item)
-        .then(() => {
-            // console.log('added to completed tasks');
-        })
-        .catch((error) => {
-            console.log(error);
-        });
+        // completedTasksRef
+        // .add(item)
+        // .then(() => {
+        //     // console.log('added to completed tasks');
+        // })
+        // .catch((error) => {
+        //     console.log(error);
+        // });
     };
 
     return(

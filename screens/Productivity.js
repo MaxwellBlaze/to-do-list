@@ -13,7 +13,8 @@ const Productivity = () => {
     const tasksRef = firebase.firestore().collection('tasks');
 
     const [completedTasks, setCompletedTasks] = useState(0);
-    const completedTasksRef = firebase.firestore().collection('completedTasks');
+    // const completedTasksRef = firebase.firestore().collection('completedTasks');
+    const completedTasksRef = firebase.firestore().collection('tasks').where('isCompleted', '==', true);
     const [completionPercentage, setCompletionPercentage] = useState(0);
 
     //get all tasks
