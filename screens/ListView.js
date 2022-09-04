@@ -69,7 +69,7 @@ const ListView = ({route, navigation}) => {
             }
         });
 
-        //for tasks
+        //for tasks (smart sort)
         tasksRef
         .where('belongsTo', '==', listName)
         .orderBy('timeAndDate', 'asc')
