@@ -54,9 +54,10 @@ const styles = StyleSheet.create({
         color: 'white',
     },
     centeredView: {
-        justifyContent: "center",
+        justifyContent: 'center',
         alignItems: "center",
-        marginTop: '50%',
+        // marginTop: '10%',
+        height: '90%',
       },
       modalView: {
         borderWidth: 0.3,

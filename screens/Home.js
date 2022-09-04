@@ -396,7 +396,7 @@ const Home = ({navigation}) => {
                                     })}
                                 </Text>
                             </View>                          
-                            <Text style={{paddingTop: 15, fontSize: 16,}}>Est time to complete task (mins):</Text>
+                            <Text style={{paddingTop: 0, fontSize: 16,}}>Est time to complete task (mins):</Text>
                             <View style={{flexDirection: 'row', justifyContent: 'center',}}>
                                  <TextInput 
                                     style={styles.textInput}
