@@ -54,10 +54,9 @@ const styles = StyleSheet.create({
         color: 'white',
     },
     centeredView: {
-        justifyContent: 'center',
+        justifyContent: "center",
         alignItems: "center",
-        // marginTop: '10%',
-        height: '90%',
+        marginTop: '50%',
       },
       modalView: {
         borderWidth: 0.3,
