@@ -11,7 +11,7 @@ const Productivity = () => {
     const tasksRef = firebase.firestore().collection('tasks');
     const [completedTasks, setCompletedTasks] = useState(0);
     const completedTasksRef = firebase.firestore().collection('tasks').where('isCompleted', '==', true);
-    const [completionPercentage, setCompletionPercentage] = useState();
+    const [completionPercentage, setCompletionPercentage] = useState(0);
 
     //get all tasks
     useEffect(() => {
@@ -52,7 +52,19 @@ const Productivity = () => {
             <View style={styles.subContainer}>
                 <Text style={styles.headerText}>Completed Tasks</Text>
                 <View style={styles.chartContainer}>
-                    {completionPercentage == 0? null : <ProgressChart
+                    {completionPercentage == 0 || completionPercentage == NaN? <ProgressChart
+                        data={{
+                            // labels: ["Done"], // optional
+                            data: [0]
+                          }}
+                        width={330}
+                        height={220}
+                        strokeWidth={16}
+                        radius={48}
+                        chartConfig={chartConfig}
+                        hideLegend={false}
+                    /> : 
+                    <ProgressChart
                         data={data}
                         width={330}
                         height={220}
@@ -66,48 +78,14 @@ const Productivity = () => {
                 <Text style={[styles.headerText, {fontSize: 18,}]}>Summary</Text>
                 <Text style={styles.bodyText}>Total Tasks: {allTasks}</Text>
                 <Text style={styles.bodyText}>Completed Tasks: {completedTasks}</Text>
-                <Text style={styles.bodyText}>Completion Rate: {(completionPercentage*100).toPrecision(2)}%</Text>
+                {completionPercentage == NaN || completionPercentage == 0? 
+                <Text style={styles.bodyText}>Completion Rate: 0%</Text> :
+                <Text style={styles.bodyText}>Completion Rate: {(completionPercentage*100).toPrecision(3)}%</Text>
+                }
+                
             </View>
         </View>
     )
 };
 
 export default Productivity;
-
-// const styles = StyleSheet.create({
-//     container: {
-//         flex: 1,
-//         backgroundColor: '#E5DCC5',
-//         borderRadius: 15,
-//     },
-//     subContainer: {
-//         backgroundColor: '#0B3948',
-//         justifyContent: 'center',
-//         alignItems: 'center',
-//         alignSelf: 'center',
-//         borderWidth: 1,
-//         borderRadius: 15,
-//         marginTop: 15,
-//         width: '90%',
-        
-//     },
-//     headerText: {
-//         fontSize: 20,
-//         fontWeight: 'bold',
-//         textAlign: 'center',
-//         padding: 5,
-//         color: '#CC7722',
-
-//     },
-//     chartContainer: {
-//         marginBottom: 10,
-//         marginHorizontal: 5,
-//     },
-//     bodyText: {
-//         fontSize: 16,
-//         fontWeight: '400',
-//         textAlign: 'center',
-//         padding: 5,
-//         color: '#CC7722',
-//     },
-// });
