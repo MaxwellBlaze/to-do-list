@@ -1,6 +1,6 @@
 import React, { useState, useEffect, } from 'react';
 import { View, Text, FlatList, TouchableOpacity, TextInput, Keyboard, Modal, Alert, } from 'react-native';
-import { Swipeable } from 'react-native-gesture-handler';
+import { Swipeable, GestureHandlerRootView } from 'react-native-gesture-handler';
 import  SwitchSelector  from "react-native-switch-selector";
 import SelectDropdown from 'react-native-select-dropdown';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
@@ -238,23 +238,25 @@ const Home = ({navigation}) => {
                     data={lists}
                     numColumns={1}
                     renderItem={({item}) => (
-                        <Swipeable
-                            renderRightActions={() => rightSwipeActions(item)}
-                        >
-                            <View>
-                                <TouchableOpacity 
-                                    style={styles.list} 
-                                    onPress={() => {navigation.navigate('ListView', 
-                                        {
-                                            listName: item.name,
-                                        }
-                                    )}}
-                                >
-                                    <Text style={{textAlign: 'center', paddingTop: 5, fontSize: 18,}}>{item.name}</Text>
-                                </TouchableOpacity>
+                        <GestureHandlerRootView>
+                            <Swipeable
+                                renderRightActions={() => rightSwipeActions(item)}
+                            >
+                                <View>
+                                    <TouchableOpacity 
+                                        style={styles.list} 
+                                        onPress={() => {navigation.navigate('ListView', 
+                                            {
+                                                listName: item.name,
+                                            }
+                                        )}}
+                                    >
+                                        <Text style={{textAlign: 'center', paddingTop: 5, fontSize: 18,}}>{item.name}</Text>
+                                    </TouchableOpacity>
 
-                            </View>
-                        </Swipeable> 
+                                </View>
+                            </Swipeable> 
+                        </GestureHandlerRootView>
                     )}
                 />
             </View>

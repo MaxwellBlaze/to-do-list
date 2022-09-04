@@ -1,7 +1,7 @@
 import React, { useState, useEffect, } from 'react';
 import { View, Text, FlatList, TouchableOpacity, TextInput, Keyboard, Modal, Alert, } from 'react-native';
 import Checkbox from 'expo-checkbox';
-import { Swipeable } from 'react-native-gesture-handler';
+import { Swipeable, GestureHandlerRootView } from 'react-native-gesture-handler';
 import  SwitchSelector  from "react-native-switch-selector";
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { firebase } from '../firebase/config';
@@ -288,65 +288,65 @@ const ListView = ({route}) => {
                     data={useData}
                     numColumns={1}
                     renderItem={({item}) => (
-                        
-                        <Swipeable
-                            renderRightActions={() => rightSwipeActions(item)}
-                            renderLeftActions={() => leftSwipeActions(item)}
-                            onSwipeableOpen={(left) => setSelectedTask(item)}
-                        >
-                            {!item.isCompleted? <View style={[styles.task, {flexDirection: 'row',}]}>
-                                <View style={{flexDirection: 'column', borderRightWidth: 0.5, padding: 5, flex:1,}}>
-                                    {/* task name */}
-                                    <Text style={{textAlign: 'center', padding: 1, fontSize: 18, fontWeight: 'bold', borderBottomWidth: 1,}}>
-                                        {item.name}
-                                    </Text>
+                        <GestureHandlerRootView>
+                            <Swipeable
+                                renderRightActions={() => rightSwipeActions(item)}
+                                renderLeftActions={() => leftSwipeActions(item)}
+                                onSwipeableOpen={(left) => setSelectedTask(item)}
+                            >
+                                {!item.isCompleted? <View style={[styles.task, {flexDirection: 'row',}]}>
+                                    <View style={{flexDirection: 'column', borderRightWidth: 0.5, padding: 5, flex:1,}}>
+                                        {/* task name */}
+                                        <Text style={{textAlign: 'center', padding: 1, fontSize: 18, fontWeight: 'bold', borderBottomWidth: 1,}}>
+                                            {item.name}
+                                        </Text>
 
-                                    {/* priority */}
-                                    {item.priority == 2 ? 
-                                    <View style={{borderTopWidth: 0.5, borderBottomWidth: 0.5, backgroundColor: 'yellow'}}>
-                                        <Text style={{textAlign: 'center', padding: 5, fontSize: 15, color: 'yellow'}}>
-                                            {/* {'Priority: ' + item.priority} */}
-                                        </Text> 
-                                    </View> : item.priority == 3 ? 
-                                    <View style={{borderTopWidth: 0.5, borderBottomWidth: 0.5, backgroundColor: 'red'}}>
-                                        <Text style={{textAlign: 'center', padding: 5, fontSize: 15, color: 'red'}}>
-                                            {/* {'Priority: ' + item.priority} */}
-                                        </Text> 
-                                    </View> : 
-                                    <View style={{borderTopWidth: 0.5, borderBottomWidth: 0.5, backgroundColor: 'green'}}>
-                                        <Text style={{textAlign: 'center', padding: 5, fontSize: 15, color: 'green'}}>
-                                            {/* {'Priority: ' + item.priority} */}
-                                        </Text> 
-                                    </View> }
+                                        {/* priority */}
+                                        {item.priority == 2 ? 
+                                        <View style={{borderTopWidth: 0.5, borderBottomWidth: 0.5, backgroundColor: 'yellow'}}>
+                                            <Text style={{textAlign: 'center', padding: 5, fontSize: 15, color: 'yellow'}}>
+                                                {/* {'Priority: ' + item.priority} */}
+                                            </Text> 
+                                        </View> : item.priority == 3 ? 
+                                        <View style={{borderTopWidth: 0.5, borderBottomWidth: 0.5, backgroundColor: 'red'}}>
+                                            <Text style={{textAlign: 'center', padding: 5, fontSize: 15, color: 'red'}}>
+                                                {/* {'Priority: ' + item.priority} */}
+                                            </Text> 
+                                        </View> : 
+                                        <View style={{borderTopWidth: 0.5, borderBottomWidth: 0.5, backgroundColor: 'green'}}>
+                                            <Text style={{textAlign: 'center', padding: 5, fontSize: 15, color: 'green'}}>
+                                                {/* {'Priority: ' + item.priority} */}
+                                            </Text> 
+                                        </View> }
 
-                                    {/* est. time to complete */}
-                                    {!isNaN(item.timeToComplete) ? 
-                                    <View style={{borderTopWidth: 0,}}>
-                                        <Text style={{textAlign: 'center', padding: 5, fontSize: 15,}}>
-                                            {'Est. Time to Complete: ' + item.timeToComplete + '(mins)'}
-                                        </Text> 
-                                    </View> : <View></View>}
+                                        {/* est. time to complete */}
+                                        {!isNaN(item.timeToComplete) ? 
+                                        <View style={{borderTopWidth: 0,}}>
+                                            <Text style={{textAlign: 'center', padding: 5, fontSize: 15,}}>
+                                                {'Est. Time to Complete: ' + item.timeToComplete + '(mins)'}
+                                            </Text> 
+                                        </View> : <View></View>}
 
-                                    {/* deadline */}
-                                    {item.timeAndDate != '' ? 
-                                    <View style={{borderTopWidth: 0.5,}}>
-                                        <Text style={{textAlign: 'center', padding: 5, fontSize: 15,}}>
-                                            {'Deadline: ' + item.timeAndDate.toDate()}
-                                        </Text> 
-                                    </View> : <View></View>}
-                                </View>
-                                <Checkbox
-                                    style={{alignSelf: 'center', margin: 10,}}
-                                    //change to item.isCompleted
-                                    value={item.isCompleted}
-                                    //change to onChecked function, to be implemented
-                                    onValueChange={() => checkboxIsChecked(item)}
-                                    color={isChecked ? 'green' : undefined}
-                                />                               
+                                        {/* deadline */}
+                                        {item.timeAndDate != '' ? 
+                                        <View style={{borderTopWidth: 0.5,}}>
+                                            <Text style={{textAlign: 'center', padding: 5, fontSize: 15,}}>
+                                                {'Deadline: ' + item.timeAndDate.toDate()}
+                                            </Text> 
+                                        </View> : <View></View>}
+                                    </View>
+                                    <Checkbox
+                                        style={{alignSelf: 'center', margin: 10,}}
+                                        //change to item.isCompleted
+                                        value={item.isCompleted}
+                                        //change to onChecked function, to be implemented
+                                        onValueChange={() => checkboxIsChecked(item)}
+                                        color={isChecked ? 'green' : undefined}
+                                    />                               
 
-                            </View> : null}
-                                                                              
-                        </Swipeable> 
+                                </View> : null}                                                                              
+                            </Swipeable> 
+                        </GestureHandlerRootView>
                     )}
                 />
             </View>   
