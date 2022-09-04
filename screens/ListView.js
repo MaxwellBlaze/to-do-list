@@ -337,9 +337,7 @@ const ListView = ({route}) => {
                                     </View>
                                     <Checkbox
                                         style={{alignSelf: 'center', margin: 10,}}
-                                        //change to item.isCompleted
                                         value={item.isCompleted}
-                                        //change to onChecked function, to be implemented
                                         onValueChange={() => checkboxIsChecked(item)}
                                         color={isChecked ? 'green' : undefined}
                                     />                               
@@ -554,8 +552,6 @@ const ListView = ({route}) => {
                                         setOpenDateTimePicker(false);
                                         // console.log('Date Time Picker cancel pressed');
                                     }}
-                                    // onConfirm={()=>{console.log('on confirm')}}
-                                    // onCancel={()=>{setOpenDateTimePicker(false); console.log('on cancel')}}
                                 />
 
                                 <TouchableOpacity 

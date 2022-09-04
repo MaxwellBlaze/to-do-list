@@ -1,5 +1,5 @@
 import React, { useState, useEffect, } from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, } from 'react-native';
 import { firebase } from '../firebase/config';
 import { ProgressChart } from 'react-native-chart-kit';
 import styles from '../styles/ProductivityStyles';

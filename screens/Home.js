@@ -19,7 +19,6 @@ const Home = ({navigation}) => {
     // for managing tasks
     const [tasks, setTasks] = useState([]);
     const tasksRef = firebase.firestore().collection('tasks');
-    // const [deleteTasks, setDeleteTasks] = useState([]);
 
     //add states for all task properties
     const [addTaskName, setAddTaskName] = useState('');

@@ -23,9 +23,6 @@ const CompletedTasks = () => {
                         priority: doc.data().priority,
                         timeAndDate: doc.data().timeAndDate,
                         timeToComplete: doc.data().timeToComplete,
-                        // isCompleted: doc.data().isCompleted,
-                        // belongsTo: doc.data().belongsTo,
-                        // dateCreated: doc.data().dateCreated,
                     })
                 })
                 setTasks(tasks);
